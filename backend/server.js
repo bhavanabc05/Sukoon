@@ -4,6 +4,10 @@ const express=require('express')
 const mongoose=require('mongoose')
 const cors=require('cors')
 const dotenv=require('dotenv')
+
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
  
 dotenv.config()
 
@@ -41,6 +45,136 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
+// Register a new user
+app.post("/api/auth/register", async (req, res) => {
+  try {
+    const {
+      fullName,
+      email,
+      password,
+      profession,
+      specialization,
+      organization,
+      preferredLanguage,
+    } = req.body;
+
+    // Check required fields
+    if (!fullName || !email || !password || !profession) {
+      return res.status(400).json({
+        message:
+          "Full name, email, password, and profession are required",
+      });
+    }
+
+    // Check whether user already exists
+    const existingUser = await User.findOne({
+      email: email.toLowerCase(),
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
+        message: "A user with this email already exists",
+      });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await User.create({
+      fullName,
+      email,
+      passwordHash,
+      profession,
+      specialization: specialization || "",
+      organization: organization || "",
+      preferredLanguage: preferredLanguage || "English",
+    });
+
+    // Send safe user data back
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profession: user.profession,
+        specialization: user.specialization,
+        organization: user.organization,
+        preferredLanguage: user.preferredLanguage,
+      },
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+
+    res.status(500).json({
+      message: "Error registering user",
+    });
+  }
+});
+
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check required fields
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // Compare password
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user.passwordHash
+    );
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Send token and user data back
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profession: user.profession,
+        specialization: user.specialization,
+        organization: user.organization,
+        preferredLanguage: user.preferredLanguage,
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+
+    res.status(500).json({
+      message: "Error logging in",
+    });
+  }
+});
+    
 const PORT=5000;
 app.listen(PORT,()=>{
     console.log(`Sukoon backend running on http://localhost:${PORT}`)

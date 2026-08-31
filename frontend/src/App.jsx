@@ -11,6 +11,9 @@ import Interventions from "./pages/Interventions";
 import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import EmotionalGranularity from "./pages/EmotionalGranularity";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -38,11 +41,8 @@ function App() {
               🎨 Emotional Granularity
             </NavLink>
             <button className="nav-item">💬 Text Emotion</button>
-
             <button className="nav-item">🎤 Audio Emotion</button>
-
             <button className="nav-item">📷 Facial / Video Emotion</button>
-
             <button className="nav-item">🧍 Somatic Stress Map</button>
 
             <p className="nav-heading">ANALYZE</p>
@@ -76,11 +76,8 @@ function App() {
             </NavLink>
 
             <button className="nav-item">🎯 Challenges</button>
-
             <button className="nav-item">🔔 Reminders</button>
-
             <button className="nav-item">📚 Resource Hub</button>
-
             <button className="nav-item">🩺 Professional Support</button>
 
             <p className="nav-heading">ACCOUNT</p>
@@ -94,19 +91,103 @@ function App() {
         {/* Main Content */}
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/mood-checkin" element={<MoodCheckin />} />
+            {/* Public Routes */}
+
+            <Route path="/login" element={<Login />} />
+
+            <Route path="/register" element={<Register />} />
+
+            {/* Protected Routes */}
+
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/mood-checkin"
+              element={
+                <ProtectedRoute>
+                  <MoodCheckin />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/emotional-granularity"
-              element={<EmotionalGranularity />}
+              element={
+                <ProtectedRoute>
+                  <EmotionalGranularity />
+                </ProtectedRoute>
+              }
             />
-            <Route path="/emotion-insights" element={<EmotionInsights />} />
-            <Route path="/phq4" element={<PHQ4Assessment />} />
-            <Route path="/journal" element={<Journal />} />
-            <Route path="/chatbot" element={<Chatbot />} />
-            <Route path="/interventions" element={<Interventions />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/profile" element={<Profile />} />
+
+            <Route
+              path="/emotion-insights"
+              element={
+                <ProtectedRoute>
+                  <EmotionInsights />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/phq4"
+              element={
+                <ProtectedRoute>
+                  <PHQ4Assessment />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/journal"
+              element={
+                <ProtectedRoute>
+                  <Journal />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/chatbot"
+              element={
+                <ProtectedRoute>
+                  <Chatbot />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/interventions"
+              element={
+                <ProtectedRoute>
+                  <Interventions />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/community"
+              element={
+                <ProtectedRoute>
+                  <Community />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
       </div>
