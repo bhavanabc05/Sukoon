@@ -1,0 +1,125 @@
+.mood-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.mood-header {
+  margin-bottom: 30px;
+}
+
+.mood-header h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.mood-header p {
+  color: #64748b;
+  font-size: 17px;
+}
+
+.mood-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 35px;
+}
+
+.mood-card h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.emotion-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+}
+
+.emotion-option {
+  min-height: 110px;
+  border: 1px solid #dbe2ea;
+  background: #ffffff;
+  border-radius: 14px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+  font-size: 15px;
+}
+
+.emotion-option:hover {
+  border-color: #2563eb;
+}
+
+.emotion-option.selected {
+  border: 2px solid #2563eb;
+  background: #eff6ff;
+}
+
+.emotion-emoji {
+  font-size: 30px;
+}
+
+.intensity-section {
+  margin-top: 40px;
+}
+
+.intensity-value {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  margin: 20px 0;
+}
+
+.intensity-section input[type="range"] {
+  width: 100%;
+}
+
+.intensity-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.mood-submit {
+  width: 100%;
+  margin-top: 30px;
+  padding: 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.mood-submit:hover {
+  background: #1d4ed8;
+}
+
+.mood-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mood-error {
+  margin-top: 20px;
+  color: #dc2626;
+}
+
+.mood-success {
+  margin-top: 20px;
+  color: #16a34a;
+}

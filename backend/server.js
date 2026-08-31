@@ -1,5 +1,3 @@
-const User = require("./models/User");
-
 const express=require('express')
 const mongoose=require('mongoose')
 const cors=require('cors')
@@ -10,6 +8,10 @@ const jwt = require("jsonwebtoken");
 
  
 dotenv.config()
+
+const User = require("./models/User");
+const MoodRecord = require("./models/MoodRecord");
+const authenticateToken = require("./middleware/authMiddleware");
 
 const app=express()
 
@@ -147,9 +149,14 @@ app.post("/api/auth/login", async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      {
+        userId: user._id.toString(),
+        email: user.email,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      {
+        expiresIn: "7d",
+      }
     );
 
     // Send token and user data back
@@ -175,6 +182,48 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
     
+// Save a mood check-in
+app.post("/api/moods", authenticateToken, async (req, res) => {
+  try {
+    const { mood, intensity } = req.body;
+
+    // Validate mood
+    if (!mood) {
+      return res.status(400).json({
+        message: "Mood is required",
+      });
+    }
+
+    // Validate intensity
+    if (
+      intensity === undefined ||
+      intensity < 1 ||
+      intensity > 10
+    ) {
+      return res.status(400).json({
+        message: "Intensity must be between 1 and 10",
+      });
+    }
+
+    const moodRecord = await MoodRecord.create({
+      userId: req.user.userId,
+      mood,
+      intensity,
+    });
+
+    res.status(201).json({
+      message: "Mood check-in saved successfully",
+      moodRecord,
+    });
+  } catch (error) {
+    console.error("Mood check-in error:", error);
+
+    res.status(500).json({
+      message: "Error saving mood check-in",
+    });
+  }
+});
+
 const PORT=5000;
 app.listen(PORT,()=>{
     console.log(`Sukoon backend running on http://localhost:${PORT}`)
