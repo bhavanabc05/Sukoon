@@ -1,0 +1,228 @@
+.granularity-page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.granularity-header {
+  margin-bottom: 30px;
+}
+
+.page-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #64748b;
+}
+
+.granularity-header h1 {
+  font-size: 34px;
+  margin: 8px 0;
+  color: #1e293b;
+}
+
+.granularity-header > p:last-child {
+  color: #64748b;
+  font-size: 16px;
+}
+
+.granularity-card {
+  background: white;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  padding: 35px;
+}
+
+.emotion-level {
+  padding: 25px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.emotion-level:first-child {
+  padding-top: 0;
+}
+
+.emotion-level:last-child {
+  border-bottom: none;
+}
+
+.level-heading {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.level-heading h2 {
+  margin: 0 0 5px;
+  font-size: 19px;
+  color: #1e293b;
+}
+
+.level-heading p {
+  margin: 0;
+  color: #64748b;
+}
+
+.level-number {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e8f0ff;
+  color: #2563eb;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: 700;
+}
+
+.primary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.primary-option {
+  min-height: 100px;
+  border: 1px solid #dbe2ea;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+}
+
+.primary-option span {
+  font-size: 30px;
+}
+
+.primary-option:hover {
+  border-color: #2563eb;
+}
+
+.primary-option.selected {
+  border: 2px solid #2563eb;
+  background: #eff6ff;
+}
+
+.secondary-grid,
+.specific-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.secondary-option,
+.specific-option {
+  border: 1px solid #dbe2ea;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.secondary-option:hover,
+.specific-option:hover {
+  border-color: #2563eb;
+}
+
+.secondary-option.selected,
+.specific-option.selected {
+  border: 2px solid #2563eb;
+  background: #eff6ff;
+}
+
+.granularity-intensity {
+  max-width: 700px;
+}
+
+.granularity-intensity strong {
+  display: block;
+  text-align: center;
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.granularity-intensity input[type="range"] {
+  width: 100%;
+}
+
+.intensity-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.granularity-submit {
+  width: 100%;
+  padding: 14px;
+  margin-top: 25px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.granularity-submit:hover {
+  background: #1d4ed8;
+}
+
+.granularity-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.granularity-error {
+  color: #dc2626;
+  margin-top: 20px;
+}
+
+.granularity-success {
+  color: #16a34a;
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .primary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .primary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .granularity-page {
+    padding: 10px;
+  }
+
+  .granularity-card {
+    padding: 20px;
+  }
+}
+
+.wheel-section {
+  padding: 25px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.wheel-section .level-heading {
+  margin-bottom: 10px;
+}

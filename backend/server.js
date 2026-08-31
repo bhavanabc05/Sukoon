@@ -11,6 +11,8 @@ dotenv.config()
 
 const User = require("./models/User");
 const MoodRecord = require("./models/MoodRecord");
+const EmotionalGranularity = require("./models/EmotionalGranularity");
+
 const authenticateToken = require("./middleware/authMiddleware");
 
 const app=express()
@@ -223,6 +225,67 @@ app.post("/api/moods", authenticateToken, async (req, res) => {
     });
   }
 });
+
+// Save an emotional granularity check-in
+app.post(
+  "/api/emotional-granularity",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const {
+        primaryEmotion,
+        secondaryEmotion,
+        specificEmotion,
+        intensity,
+      } = req.body;
+
+      // Validate emotions
+      if (
+        !primaryEmotion ||
+        !secondaryEmotion ||
+        !specificEmotion
+      ) {
+        return res.status(400).json({
+          message: "All emotion levels are required",
+        });
+      }
+
+      // Validate intensity
+      if (
+        intensity === undefined ||
+        intensity < 1 ||
+        intensity > 10
+      ) {
+        return res.status(400).json({
+          message: "Intensity must be between 1 and 10",
+        });
+      }
+
+      const record = await EmotionalGranularity.create({
+        userId: req.user.userId,
+        primaryEmotion,
+        secondaryEmotion,
+        specificEmotion,
+        intensity,
+        source: "self_reported",
+      });
+
+      res.status(201).json({
+        message: "Emotional granularity record saved successfully",
+        record,
+      });
+    } catch (error) {
+      console.error(
+        "Emotional granularity error:",
+        error
+      );
+
+      res.status(500).json({
+        message: "Error saving emotional granularity record",
+      });
+    }
+  }
+);
 
 const PORT=5000;
 app.listen(PORT,()=>{
