@@ -48,12 +48,12 @@ function Dashboard() {
             <span>Explore emotions →</span>
           </Link>
 
-          <div className="quick-card">
+          <Link to="/somatic-stress" className="quick-card">
             <div className="quick-icon">🧍</div>
             <h3>Somatic Stress Map</h3>
             <p>Notice where stress and tension appear in your body.</p>
             <span>Map stress →</span>
-          </div>
+          </Link>
         </div>
       </section>
 

@@ -12,6 +12,7 @@ dotenv.config()
 const User = require("./models/User");
 const MoodRecord = require("./models/MoodRecord");
 const EmotionalGranularity = require("./models/EmotionalGranularity");
+const SomaticStressRecord = require("./models/SomaticStressRecord");
 
 const authenticateToken = require("./middleware/authMiddleware");
 
@@ -20,14 +21,25 @@ const app=express()
 app.use(cors())
 app.use(express.json())
 
+const PORT = 5000;
+
 mongoose
-.connect(process.env.MONGODB_URI)
-.then(()=>{
-    console.log("Connected to MongoDB Atlas!")
-})
-.catch((error)=>{
-    console.error("MongoDB connection error:",error);
-});
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Connected to MongoDB Atlas!");
+
+    app.listen(PORT, () => {
+      console.log(
+        `Sukoon backend running on http://localhost:${PORT}`
+      );
+    });
+  })
+  .catch((error) => {
+    console.error(
+      "MongoDB connection error:",
+      error
+    );
+  });
 
 app.get('/',(req,res)=>{
     res.json({
@@ -287,7 +299,46 @@ app.post(
   }
 );
 
-const PORT=5000;
-app.listen(PORT,()=>{
-    console.log(`Sukoon backend running on http://localhost:${PORT}`)
-})
+// Save somatic stress record
+app.post("/api/somatic-stress", authenticateToken, async (req, res) => {
+  try {
+    const { symptoms, severity } = req.body;
+
+    if (!Array.isArray(symptoms) || symptoms.length === 0) {
+      return res.status(400).json({
+        message: "At least one body symptom is required",
+      });
+    }
+
+    if (
+      typeof severity !== "number" ||
+      severity < 1 ||
+      severity > 10
+    ) {
+      return res.status(400).json({
+        message: "Severity must be between 1 and 10",
+      });
+    }
+
+    const record = await SomaticStressRecord.create({
+      userId: req.user.userId,
+      symptoms,
+      severity,
+    });
+
+    res.status(201).json({
+      message: "Somatic stress record saved successfully",
+      record,
+    });
+  } catch (error) {
+    console.error(
+      "Somatic stress error:",
+      error
+    );
+
+    res.status(500).json({
+      message: "Error saving somatic stress record",
+    });
+  }
+});
+

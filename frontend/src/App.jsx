@@ -14,6 +14,7 @@ import EmotionalGranularity from "./pages/EmotionalGranularity";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SomaticStress from "./pages/SomaticStress";
 
 function App() {
   return (
@@ -43,8 +44,9 @@ function App() {
             <button className="nav-item">💬 Text Emotion</button>
             <button className="nav-item">🎤 Audio Emotion</button>
             <button className="nav-item">📷 Facial / Video Emotion</button>
-            <button className="nav-item">🧍 Somatic Stress Map</button>
-
+            <NavLink to="/somatic-stress" className="nav-item">
+              🧍 Somatic Stress Map
+            </NavLink>
             <p className="nav-heading">ANALYZE</p>
 
             <NavLink to="/emotion-insights" className="nav-item">
@@ -122,6 +124,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <EmotionalGranularity />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/somatic-stress"
+              element={
+                <ProtectedRoute>
+                  <SomaticStress />
                 </ProtectedRoute>
               }
             />

@@ -1,0 +1,186 @@
+.somatic-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px 30px 60px;
+}
+
+.somatic-header {
+  margin-bottom: 28px;
+}
+
+.somatic-header .page-label {
+  margin: 0 0 8px;
+  color: #367568;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.somatic-header h1 {
+  margin: 0 0 10px;
+  color: #1e293b;
+  font-size: 34px;
+  line-height: 1.2;
+}
+
+.somatic-header > p:last-child {
+  max-width: 650px;
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.somatic-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.05);
+}
+
+.somatic-section {
+  padding-bottom: 30px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.section-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+
+  background: #e6f3ef;
+  color: #367568;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.section-heading h2 {
+  margin: 2px 0 5px;
+  color: #1e293b;
+  font-size: 19px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Severity */
+
+.severity-section {
+  padding-top: 30px;
+}
+
+.severity-control {
+  max-width: 600px;
+  margin: 25px auto 0;
+}
+
+.severity-value {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.severity-value strong {
+  color: #367568;
+  font-size: 24px;
+}
+
+.severity-control input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+  accent-color: #367568;
+}
+
+.severity-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* Messages */
+
+.somatic-error,
+.somatic-success {
+  margin: 22px 0 0;
+  padding: 12px 15px;
+  border-radius: 9px;
+  font-size: 14px;
+}
+
+.somatic-error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.somatic-success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+/* Submit */
+
+.somatic-submit {
+  display: block;
+  margin: 28px auto 0;
+
+  border: none;
+  border-radius: 10px;
+
+  padding: 12px 22px;
+
+  background: #367568;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.somatic-submit:hover {
+  transform: translateY(-1px);
+}
+
+.somatic-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .somatic-page {
+    padding: 25px 15px 45px;
+  }
+
+  .somatic-card {
+    padding: 20px;
+  }
+
+  .somatic-header h1 {
+    font-size: 28px;
+  }
+}

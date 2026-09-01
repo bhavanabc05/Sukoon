@@ -1,0 +1,411 @@
+.somatic-map-container {
+  width: 100%;
+  padding: 8px 0 20px;
+}
+
+.somatic-map-layout {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) 340px;
+  gap: 40px;
+  align-items: start;
+}
+
+/* =========================
+   BODY MAP
+========================= */
+
+.body-map-column {
+  display: flex;
+  justify-content: center;
+}
+
+.body-map-card {
+  width: 100%;
+  max-width: 560px;
+}
+
+.body-map-instruction {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+
+  color: #64748b;
+  font-size: 13px;
+}
+
+.instruction-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #367568;
+}
+
+.body-map-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.somatic-body-map {
+  width: 390px;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* =========================
+   BODY REGIONS
+========================= */
+
+.body-region {
+  cursor: pointer;
+  outline: none;
+}
+
+.body-region path,
+.body-region circle {
+  fill: #edf2f1;
+  stroke: #91a6a1;
+  stroke-width: 2;
+  transition:
+    fill 0.2s ease,
+    stroke 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.body-region:hover path,
+.body-region:hover circle {
+  fill: #d9ebe6;
+  stroke: #4f8276;
+  filter: drop-shadow(0 3px 5px rgba(54, 117, 104, 0.15));
+}
+
+.body-region.selected path,
+.body-region.selected circle {
+  fill: #a9d8cb;
+  stroke: #367568;
+  stroke-width: 3;
+  filter: drop-shadow(0 4px 8px rgba(54, 117, 104, 0.2));
+}
+
+.body-region text {
+  fill: #475569;
+  font-size: 10px;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+
+.body-region.selected text {
+  fill: #245b50;
+}
+
+.body-neutral {
+  fill: #f1f5f4;
+  stroke: #b3c1be;
+  stroke-width: 2;
+}
+
+/* =========================
+   LEGEND
+========================= */
+
+.body-map-legend {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 3px;
+
+  color: #64748b;
+  font-size: 11px;
+}
+
+.body-map-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.unselected {
+  background: #edf2f1;
+  border: 1px solid #91a6a1;
+}
+
+.legend-dot.selected {
+  background: #367568;
+}
+
+/* =========================
+   SELECTED AREAS PANEL
+========================= */
+
+.somatic-selections {
+  width: 100%;
+  padding: 20px;
+
+  border: 1px solid #dfe7e5;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.selection-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.selection-title-row h3 {
+  margin: 0 0 4px;
+
+  color: #1e293b;
+  font-size: 18px;
+}
+
+.selection-title-row p {
+  margin: 0;
+
+  color: #64748b;
+  font-size: 12px;
+}
+
+.selection-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 26px;
+  height: 26px;
+
+  padding: 0 7px;
+
+  border-radius: 13px;
+
+  background: #e6f3ef;
+  color: #367568;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 32px 18px;
+
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+
+  text-align: center;
+}
+
+.empty-icon {
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.empty-selection strong {
+  margin-bottom: 6px;
+
+  color: #334155;
+  font-size: 14px;
+}
+
+.empty-selection p {
+  max-width: 220px;
+  margin: 0;
+
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================
+   SELECTION CARD
+========================= */
+
+.selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.somatic-selection {
+  padding: 15px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+
+  background: #f8fafb;
+}
+
+.selection-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+}
+
+.selection-header strong {
+  display: block;
+
+  color: #334155;
+  font-size: 14px;
+}
+
+.selection-header small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+.remove-area {
+  width: 25px;
+  height: 25px;
+
+  border: 1px solid #dbe3e1;
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #64748b;
+
+  font-size: 17px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.remove-area:hover {
+  background: #f1f5f4;
+  color: #b45353;
+}
+
+/* =========================
+   SENSATION
+========================= */
+
+.somatic-selection label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.somatic-selection select {
+  width: 100%;
+
+  padding: 9px 10px;
+
+  border: 1px solid #d8e1df;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 12px;
+
+  outline: none;
+}
+
+.somatic-selection select:focus {
+  border-color: #6a9d91;
+}
+
+/* =========================
+   STRESS LEVEL
+========================= */
+
+.stress-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 15px;
+}
+
+.stress-heading label {
+  margin: 0;
+}
+
+.stress-heading strong {
+  color: #367568;
+  font-size: 13px;
+}
+
+.somatic-selection input[type="range"] {
+  width: 100%;
+  margin: 8px 0 0;
+
+  cursor: pointer;
+
+  accent-color: #367568;
+}
+
+.stress-labels {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 2px;
+
+  color: #94a3b8;
+  font-size: 9px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .somatic-map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .body-map-column {
+    width: 100%;
+  }
+
+  .body-map-card {
+    max-width: 500px;
+  }
+
+  .somatic-selections {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .somatic-body-map {
+    width: 320px;
+  }
+
+  .somatic-selections {
+    padding: 16px;
+  }
+}
