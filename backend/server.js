@@ -13,6 +13,7 @@ const User = require("./models/User");
 const MoodRecord = require("./models/MoodRecord");
 const EmotionalGranularity = require("./models/EmotionalGranularity");
 const SomaticStressRecord = require("./models/SomaticStressRecord");
+const PHQ4Assessment = require("./models/PHQ4Assessment");
 
 const authenticateToken = require("./middleware/authMiddleware");
 
@@ -342,3 +343,90 @@ app.post("/api/somatic-stress", authenticateToken, async (req, res) => {
   }
 });
 
+// PHQ-4 Assessment
+app.post("/api/phq4", authenticateToken, async (req, res) => {
+  try {
+    const { responses } = req.body;
+
+    // Validate responses
+    if (
+      !Array.isArray(responses) ||
+      responses.length !== 4 ||
+      responses.some(
+        (response) =>
+          !Number.isInteger(response) ||
+          response < 0 ||
+          response > 3
+      )
+    ) {
+      return res.status(400).json({
+        message:
+          "PHQ-4 requires exactly 4 responses, each between 0 and 3.",
+      });
+    }
+
+    // Calculate subscale scores
+    const anxietyScore = responses[0] + responses[1];
+
+    const depressionScore = responses[2] + responses[3];
+
+    // Calculate total score
+    const score = responses.reduce(
+      (total, response) => total + response,
+      0
+    );
+
+    // Determine interpretation
+    let interpretation;
+
+    if (score <= 2) {
+      interpretation = "normal";
+    } else if (score <= 5) {
+      interpretation = "mild";
+    } else if (score <= 8) {
+      interpretation = "moderate";
+    } else {
+      interpretation = "severe";
+    }
+
+    // Save assessment
+    const assessment = await PHQ4Assessment.create({
+      userId: req.user.userId,
+      responses,
+      anxietyScore,
+      depressionScore,
+      score,
+      interpretation,
+    });
+
+    res.status(201).json({
+      message: "PHQ-4 assessment saved successfully",
+      assessment,
+    });
+  } catch (error) {
+    console.error("PHQ-4 error:", error);
+
+    res.status(500).json({
+      message: "Error saving PHQ-4 assessment",
+    });
+  }
+});
+
+// Get PHQ-4 assessment history
+app.get("/api/phq4", authenticateToken, async (req, res) => {
+  try {
+    const assessments = await PHQ4Assessment.find({
+      userId: req.user.userId,
+    }).sort({ completedAt: -1 });
+
+    res.status(200).json({
+      assessments,
+    });
+  } catch (error) {
+    console.error("PHQ-4 history error:", error);
+
+    res.status(500).json({
+      message: "Error fetching PHQ-4 assessment history",
+    });
+  }
+})
