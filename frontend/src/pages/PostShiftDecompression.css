@@ -1,0 +1,326 @@
+.post-shift-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.post-shift-header {
+  margin-bottom: 30px;
+}
+
+.post-shift-header h1 {
+  margin-bottom: 8px;
+  font-size: 32px;
+}
+
+.post-shift-header p {
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.post-shift-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+.post-shift-section {
+  margin-bottom: 30px;
+}
+
+.post-shift-section > label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.post-shift-section select,
+.post-shift-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: white;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.post-shift-section select:focus,
+.post-shift-section textarea:focus {
+  border-color: #64748b;
+}
+
+.post-shift-section textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.post-shift-emotions {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.post-shift-emotion {
+  padding: 11px 8px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #475569;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.post-shift-emotion:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.post-shift-emotion-selected {
+  background: #334155;
+  border-color: #334155;
+  color: white;
+}
+
+.post-shift-slider-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.post-shift-slider-heading label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.post-shift-slider-heading span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.post-shift-section input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+}
+
+.post-shift-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.post-shift-activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.post-shift-activity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 7px;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.post-shift-activity:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  transform: translateY(-2px);
+}
+
+.post-shift-activity-selected {
+  border-color: #334155;
+  background: #f8fafc;
+  box-shadow: 0 0 0 1px #334155;
+}
+
+.post-shift-activity-icon {
+  font-size: 28px;
+}
+
+.post-shift-activity strong {
+  font-size: 15px;
+  color: #334155;
+}
+
+.post-shift-activity-text {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.post-shift-activity small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.post-shift-optional {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.post-shift-voice-button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #334155;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.post-shift-voice-button:hover {
+  background: #f8fafc;
+}
+
+.post-shift-voice-helper {
+  margin-top: 7px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.post-shift-submit-button,
+.post-shift-complete-button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #334155;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.post-shift-submit-button:hover,
+.post-shift-complete-button:hover {
+  background: #1e293b;
+}
+
+.post-shift-submit-button:disabled,
+.post-shift-complete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.post-shift-error {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.post-shift-success {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 14px;
+}
+
+.post-shift-back {
+  border: none;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.post-shift-back:hover {
+  color: #1e293b;
+}
+
+.post-shift-duration {
+  margin: 20px 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+}
+
+.post-shift-placeholder,
+.post-shift-pause {
+  margin: 30px auto;
+  max-width: 550px;
+  padding: 25px;
+  border-radius: 16px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.post-shift-placeholder h2,
+.post-shift-pause h2 {
+  margin-bottom: 10px;
+}
+
+.post-shift-placeholder p,
+.post-shift-pause p {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.post-shift-completion-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.completion-card {
+  max-width: 650px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.completion-card h1 {
+  margin-bottom: 15px;
+}
+
+.completion-card > p {
+  color: #64748b;
+  line-height: 1.7;
+}
+
+@media (max-width: 700px) {
+  .post-shift-page {
+    padding: 20px;
+  }
+
+  .post-shift-card {
+    padding: 22px;
+  }
+
+  .post-shift-emotions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .post-shift-activity-grid {
+    grid-template-columns: 1fr;
+  }
+}

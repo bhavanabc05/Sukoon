@@ -1,0 +1,436 @@
+.interventions-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.interventions-header {
+  margin-bottom: 30px;
+}
+
+.interventions-header h1 {
+  margin-bottom: 8px;
+  font-size: 32px;
+}
+
+.interventions-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+/* Intervention cards */
+
+.intervention-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.intervention-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.intervention-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
+}
+
+.intervention-card h2 {
+  margin: 12px 0 10px;
+  font-size: 21px;
+}
+
+.intervention-card p {
+  color: #666;
+  line-height: 1.5;
+}
+
+.intervention-type {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.intervention-duration {
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.intervention-suitable {
+  font-size: 14px;
+}
+
+.intervention-start-button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: #334155;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.intervention-start-button:hover {
+  background: #1e293b;
+}
+
+/* Activity page */
+
+.intervention-activity-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.intervention-back-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #475569;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.intervention-activity-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+}
+
+.intervention-activity-card h1 {
+  margin-bottom: 10px;
+}
+
+.intervention-description {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Breathing exercise */
+
+.breathing-area {
+  margin: 35px auto;
+}
+
+.breathing-circle {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 1s ease-in-out;
+}
+
+.breathing-circle.inhale {
+  transform: scale(1.25);
+}
+
+.breathing-circle.exhale {
+  transform: scale(0.8);
+}
+
+.breathing-circle.hold {
+  transform: scale(1);
+}
+
+.breathing-content {
+  text-align: center;
+}
+
+.breathing-phase {
+  font-size: 25px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.breathing-timer {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.breathing-cycle {
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.audio-control {
+  margin: 25px 0;
+}
+
+.audio-button {
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  cursor: pointer;
+}
+
+.complete-button {
+  margin-top: 20px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #334155;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.complete-button:hover {
+  background: #1e293b;
+}
+
+.success-message {
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.instruction-list {
+  text-align: left;
+  line-height: 1.8;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .interventions-page,
+  .intervention-activity-page {
+    padding: 20px;
+  }
+
+  .intervention-card {
+    padding: 20px;
+  }
+
+  .breathing-circle {
+    width: 150px;
+    height: 150px;
+  }
+}
+/* Guided intervention additions */
+
+.activity-welcome {
+  margin: 35px auto;
+  max-width: 480px;
+  padding: 25px;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.welcome-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.activity-welcome h2 {
+  margin-bottom: 10px;
+}
+
+.activity-welcome p {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.cycle-info {
+  margin-top: 20px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.countdown-display {
+  margin: 35px auto 15px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: 700;
+}
+
+.countdown-text {
+  color: #64748b;
+  font-size: 16px;
+}
+
+.completion-icon {
+  font-size: 55px;
+  margin-bottom: 15px;
+}
+
+.breathing-count-text {
+  margin-top: 10px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.breathing-circle.inhale {
+  transform: scale(1.25);
+}
+
+.breathing-circle.exhale {
+  transform: scale(0.8);
+}
+
+.breathing-circle.hold {
+  transform: scale(1);
+}
+
+.grounding-progress {
+  margin-top: 25px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.grounding-number {
+  width: 110px;
+  height: 110px;
+  margin: 25px auto 20px;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 58px;
+  font-weight: 700;
+}
+
+.grounding-instruction {
+  max-width: 520px;
+  margin: 10px auto 20px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.grounding-input {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.grounding-input:focus {
+  border-color: #64748b;
+}
+
+.grounding-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.grounding-buttons .intervention-back-button {
+  margin-bottom: 0;
+}
+
+.grounding-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.grounding-summary {
+  margin: 30px auto;
+  max-width: 520px;
+  text-align: left;
+}
+
+.grounding-summary h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.grounding-summary-item {
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.grounding-summary-item strong {
+  font-size: 14px;
+}
+
+.grounding-summary-item p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.grounding-helper {
+  color: #64748b;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .grounding-buttons {
+    flex-direction: column;
+  }
+
+  .grounding-number {
+    width: 90px;
+    height: 90px;
+    font-size: 48px;
+  }
+}
+
+.grounding-voice {
+  margin-top: 15px;
+}
+
+.voice-button {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #334155;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.voice-button:hover {
+  background: #f8fafc;
+}
+
+.voice-button-listening {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.voice-helper {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 13px;
+}

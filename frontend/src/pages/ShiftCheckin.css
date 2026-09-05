@@ -1,0 +1,183 @@
+.shift-checkin-page {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.shift-checkin-header {
+  margin-bottom: 30px;
+}
+
+.shift-checkin-header h1 {
+  margin-bottom: 8px;
+  font-size: 32px;
+}
+
+.shift-checkin-header p {
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.shift-checkin-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+.shift-section {
+  margin-bottom: 30px;
+}
+
+.shift-section > label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.shift-section select,
+.shift-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: white;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.shift-section select:focus,
+.shift-section textarea:focus {
+  border-color: #64748b;
+}
+
+.shift-section textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.optional-label {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.emotion-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.emotion-option {
+  padding: 11px 8px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #475569;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.emotion-option:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.emotion-option-selected {
+  background: #334155;
+  border-color: #334155;
+  color: white;
+}
+
+.slider-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.slider-heading label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.slider-heading span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.shift-section input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.shift-submit-button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #334155;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.shift-submit-button:hover {
+  background: #1e293b;
+}
+
+.shift-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shift-success {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 14px;
+}
+
+.shift-error {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+@media (max-width: 700px) {
+  .shift-checkin-page {
+    padding: 20px;
+  }
+
+  .shift-checkin-card {
+    padding: 22px;
+  }
+
+  .emotion-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -15,6 +15,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SomaticStress from "./pages/SomaticStress";
+import ShiftCheckin from "./pages/ShiftCheckin";
+import PostShiftDecompression from "./pages/PostShiftDecompression";
 
 function App() {
   return (
@@ -57,12 +59,18 @@ function App() {
               📝 PHQ-4 Assessment
             </NavLink>
 
-            <button className="nav-item">🏥 Shift Check-in</button>
+            <NavLink to="/shift-checkin" className="nav-item">
+              ⏰ Shift Check-in
+            </NavLink>
 
             <p className="nav-heading">SUPPORT</p>
 
             <NavLink to="/interventions" className="nav-item">
               🧘 Interventions
+            </NavLink>
+
+            <NavLink to="/post-shift-decompression" className="nav-item">
+              🛌 Post-Shift Decompression
             </NavLink>
 
             <NavLink to="/chatbot" className="nav-item">
@@ -145,6 +153,22 @@ function App() {
               }
             />
 
+            <Route
+              path="/shift-checkin"
+              element={
+                <ProtectedRoute>
+                  <ShiftCheckin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/post-shift-decompression"
+              element={
+                <ProtectedRoute>
+                  <PostShiftDecompression />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/phq4"
               element={

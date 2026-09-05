@@ -14,6 +14,10 @@ const MoodRecord = require("./models/MoodRecord");
 const EmotionalGranularity = require("./models/EmotionalGranularity");
 const SomaticStressRecord = require("./models/SomaticStressRecord");
 const PHQ4Assessment = require("./models/PHQ4Assessment");
+const InterventionLibrary = require("./models/InterventionLibrary");
+const Intervention = require("./models/Intervention");
+const ShiftCheckin = require("./models/ShiftCheckin");
+const PostShiftDecompression = require("./models/PostShiftDecompression");
 
 const authenticateToken = require("./middleware/authMiddleware");
 
@@ -429,4 +433,335 @@ app.get("/api/phq4", authenticateToken, async (req, res) => {
       message: "Error fetching PHQ-4 assessment history",
     });
   }
-})
+});
+
+// Get Intervention Library
+app.get("/api/interventions", authenticateToken, async (req, res) => {
+  try {
+    const interventions = await InterventionLibrary.find({
+      active: true,
+    }).sort({ title: 1 });
+
+    res.status(200).json({
+      interventions,
+    });
+  } catch (error) {
+    console.error("Intervention library error:", error);
+
+    res.status(500).json({
+      message: "Error fetching intervention library",
+    });
+  }
+});
+
+// Start an Intervention
+app.post("/api/interventions/start", authenticateToken, async (req, res) => {
+  try {
+    const { interventionId } = req.body;
+
+    if (!interventionId) {
+      return res.status(400).json({
+        message: "Intervention ID is required",
+      });
+    }
+
+    const intervention = await InterventionLibrary.findOne({
+      _id: interventionId,
+      active: true,
+    });
+
+    if (!intervention) {
+      return res.status(404).json({
+        message: "Intervention not found",
+      });
+    }
+
+    const userIntervention = await Intervention.create({
+      userId: req.user.userId,
+      interventionId: intervention._id,
+      type: intervention.type,
+      title: intervention.title,
+      reason: "Started by user",
+      status: "started",
+      startedAt: new Date(),
+    });
+
+    res.status(201).json({
+      message: "Intervention started successfully",
+      intervention: userIntervention,
+    });
+  } catch (error) {
+    console.error("Start intervention error:", error);
+
+    res.status(500).json({
+      message: "Error starting intervention",
+    });
+  }
+});
+
+// Complete an Intervention
+app.patch(
+  "/api/interventions/:id/complete",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const intervention = await Intervention.findOne({
+        _id: req.params.id,
+        userId: req.user.userId,
+      });
+
+      if (!intervention) {
+        return res.status(404).json({
+          message: "User intervention not found",
+        });
+      }
+
+      intervention.status = "completed";
+      intervention.completedAt = new Date();
+
+      await intervention.save();
+
+      res.status(200).json({
+        message: "Intervention completed successfully",
+        intervention,
+      });
+    } catch (error) {
+      console.error("Complete intervention error:", error);
+
+      res.status(500).json({
+        message: "Error completing intervention",
+      });
+    }
+  }
+);
+
+app.post(
+  "/api/shift-checkins",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const {
+        shiftType,
+        mood,
+        energyLevel,
+        stressLevel,
+        emotionalReadiness,
+        note,
+      } = req.body;
+
+      if (
+        !shiftType ||
+        !mood ||
+        !mood.emotion ||
+        mood.intensity === undefined ||
+        energyLevel === undefined ||
+        stressLevel === undefined ||
+        emotionalReadiness === undefined
+      ) {
+        return res.status(400).json({
+          message: "All required shift check-in fields must be provided.",
+        });
+      }
+
+      const checkin = await ShiftCheckin.create({
+        userId: req.user.userId,
+
+        shiftType,
+
+        mood: {
+          emotion: mood.emotion,
+          intensity: mood.intensity,
+        },
+
+        energyLevel,
+        stressLevel,
+        emotionalReadiness,
+
+        note: note || "",
+      });
+
+      res.status(201).json({
+        message: "Shift check-in saved successfully.",
+        checkin,
+      });
+    } catch (error) {
+      console.error("Shift check-in error:", error);
+
+      res.status(500).json({
+        message: "Error saving shift check-in.",
+      });
+    }
+  }
+);
+
+app.get(
+  "/api/shift-checkins",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const checkins = await ShiftCheckin.find({
+        userId: req.user.userId,
+      }).sort({
+        checkInTime: -1,
+      });
+
+      res.status(200).json({
+        checkins,
+      });
+    } catch (error) {
+      console.error("Shift check-in history error:", error);
+
+      res.status(500).json({
+        message: "Error fetching shift check-in history.",
+      });
+    }
+  }
+);
+
+app.post(
+  "/api/post-shift-decompression",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const {
+        shiftType,
+        emotionalState,
+        stressLevel,
+        energyLevel,
+        selectedActivity,
+        activityDuration,
+        reflection,
+        voiceTranscript,
+      } = req.body;
+
+      if (
+        !shiftType ||
+        !emotionalState ||
+        !emotionalState.mood ||
+        emotionalState.intensity === undefined ||
+        stressLevel === undefined ||
+        energyLevel === undefined
+      ) {
+        return res.status(400).json({
+          message:
+            "All required post-shift fields must be provided.",
+        });
+      }
+
+      const decompression =
+        await PostShiftDecompression.create({
+          userId: req.user.userId,
+
+          shiftType,
+
+          emotionalState: {
+            mood: emotionalState.mood,
+            intensity: emotionalState.intensity,
+          },
+
+          stressLevel,
+          energyLevel,
+
+          selectedActivity:
+            selectedActivity || "none",
+
+          activityDuration:
+            activityDuration || 0,
+
+          reflection:
+            reflection || "",
+
+          voiceTranscript:
+            voiceTranscript || "",
+
+          startedAt: new Date(),
+        });
+
+      res.status(201).json({
+        message:
+          "Post-shift decompression started successfully.",
+        decompression,
+      });
+    } catch (error) {
+      console.error(
+        "Post-shift decompression error:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Error saving post-shift decompression.",
+      });
+    }
+  }
+);
+
+app.get(
+  "/api/post-shift-decompression",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const decompressions =
+        await PostShiftDecompression.find({
+          userId: req.user.userId,
+        }).sort({
+          startedAt: -1,
+        });
+
+      res.status(200).json({
+        decompressions,
+      });
+    } catch (error) {
+      console.error(
+        "Post-shift decompression history error:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Error fetching post-shift decompression history.",
+      });
+    }
+  }
+);
+
+app.patch(
+  "/api/post-shift-decompression/:id/complete",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const decompression =
+        await PostShiftDecompression.findOne({
+          _id: req.params.id,
+          userId: req.user.userId,
+        });
+
+      if (!decompression) {
+        return res.status(404).json({
+          message:
+            "Post-shift decompression not found.",
+        });
+      }
+
+      decompression.completedAt = new Date();
+
+      await decompression.save();
+
+      res.status(200).json({
+        message:
+          "Post-shift decompression completed successfully.",
+        decompression,
+      });
+    } catch (error) {
+      console.error(
+        "Complete decompression error:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Error completing post-shift decompression.",
+      });
+    }
+  }
+);
