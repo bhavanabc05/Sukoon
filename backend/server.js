@@ -18,6 +18,7 @@ const InterventionLibrary = require("./models/InterventionLibrary");
 const Intervention = require("./models/Intervention");
 const ShiftCheckin = require("./models/ShiftCheckin");
 const PostShiftDecompression = require("./models/PostShiftDecompression");
+const GuidedReflection = require("./models/GuidedReflection");
 
 const authenticateToken = require("./middleware/authMiddleware");
 
@@ -761,6 +762,87 @@ app.patch(
       res.status(500).json({
         message:
           "Error completing post-shift decompression.",
+      });
+    }
+  }
+);
+
+app.post(
+  "/api/guided-reflections",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const {
+        interventionId,
+        emotionalState,
+        context,
+        identifiedNeed,
+        selectedAction,
+        freeReflection,
+      } = req.body;
+
+      if (
+        !interventionId ||
+        !emotionalState ||
+        !emotionalState.primaryEmotion ||
+        !emotionalState.secondaryEmotion ||
+        !emotionalState.specificEmotion ||
+        emotionalState.intensity === undefined ||
+        !context ||
+        !identifiedNeed ||
+        !selectedAction
+      ) {
+        return res.status(400).json({
+          message:
+            "All required guided reflection fields must be provided.",
+        });
+      }
+
+      if (
+        typeof emotionalState.intensity !== "number" ||
+        emotionalState.intensity < 1 ||
+        emotionalState.intensity > 10
+      ) {
+        return res.status(400).json({
+          message: "Intensity must be between 1 and 10.",
+        });
+      }
+
+      const reflection = await GuidedReflection.create({
+        userId: req.user.userId,
+
+        interventionId,
+
+        emotionalState: {
+          primaryEmotion: emotionalState.primaryEmotion,
+          secondaryEmotion: emotionalState.secondaryEmotion,
+          specificEmotion: emotionalState.specificEmotion,
+          intensity: emotionalState.intensity,
+        },
+
+        context,
+
+        identifiedNeed,
+
+        selectedAction,
+
+        freeReflection: freeReflection || "",
+
+        completedAt: new Date(),
+      });
+
+      res.status(201).json({
+        message: "Guided reflection saved successfully.",
+        reflection,
+      });
+    } catch (error) {
+      console.error(
+        "Guided reflection error:",
+        error
+      );
+
+      res.status(500).json({
+        message: "Error saving guided reflection.",
       });
     }
   }

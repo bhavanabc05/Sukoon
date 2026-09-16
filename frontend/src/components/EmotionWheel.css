@@ -1,27 +1,45 @@
 .emotion-wheel {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
   padding: 10px 0 20px;
 }
 
+/* Wheel */
+
 .emotion-wheel svg {
   display: block;
-  width: min(650px, 90vw);
+
+  /*
+    The wheel now adapts to its parent container.
+    This prevents it from overflowing inside Guided Reflection.
+  */
+  width: min(100%, 620px);
+  max-width: 100%;
   height: auto;
-  max-height: 650px;
+
   overflow: visible;
 }
 
 /* Toolbar */
 
 .wheel-toolbar {
-  width: min(650px, 90vw);
+  width: min(100%, 620px);
+  max-width: 100%;
+
+  box-sizing: border-box;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+
+  margin-bottom: 10px;
+  padding: 0 2px;
 }
 
 .wheel-back,
@@ -29,19 +47,36 @@
   border: 1px solid #cbd5e1;
   background: #ffffff;
   color: #334155;
+
   border-radius: 8px;
+
   padding: 7px 13px;
+
   cursor: pointer;
+
   font-size: 13px;
+  font-family: inherit;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .wheel-back:hover,
 .wheel-reset:hover {
   background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.wheel-back:active,
+.wheel-reset:active {
+  transform: scale(0.98);
 }
 
 .wheel-level {
   color: #64748b;
+
   font-size: 13px;
   font-weight: 600;
 }
@@ -49,16 +84,24 @@
 /* Breadcrumb */
 
 .wheel-breadcrumb {
+  width: min(100%, 620px);
+  max-width: 100%;
+
   min-height: 25px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   flex-wrap: wrap;
   gap: 7px;
-  margin-bottom: 3px;
+
+  margin-bottom: 6px;
 
   color: #475569;
   font-size: 14px;
+
+  text-align: center;
 }
 
 .wheel-breadcrumb strong {
@@ -82,24 +125,70 @@
 /* Instructions */
 
 .wheel-hint {
-  margin: 3px 0 0;
+  width: 100%;
+  max-width: 620px;
+
+  box-sizing: border-box;
+
+  margin: 8px 0 0;
+
   color: #64748b;
+
   font-size: 13px;
+  line-height: 1.5;
+
   text-align: center;
 }
 
-/* Mobile */
+/* Prevent accidental horizontal overflow */
+
+.emotion-wheel,
+.emotion-wheel * {
+  box-sizing: border-box;
+}
+
+/* Tablet / smaller containers */
 
 @media (max-width: 700px) {
+  .emotion-wheel {
+    padding: 8px 0 16px;
+  }
+
   .emotion-wheel svg {
     width: 100%;
+    max-width: 100%;
   }
 
   .wheel-toolbar {
     width: 100%;
+    max-width: 100%;
   }
 
   .wheel-breadcrumb {
+    width: 100%;
+    max-width: 100%;
     font-size: 13px;
+  }
+
+  .wheel-hint {
+    font-size: 12px;
+  }
+}
+
+/* Very small screens */
+
+@media (max-width: 450px) {
+  .wheel-toolbar {
+    padding: 0;
+  }
+
+  .wheel-back,
+  .wheel-reset {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .wheel-level {
+    font-size: 12px;
   }
 }
