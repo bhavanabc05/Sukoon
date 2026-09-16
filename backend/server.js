@@ -20,6 +20,7 @@ const ShiftCheckin = require("./models/ShiftCheckin");
 const PostShiftDecompression = require("./models/PostShiftDecompression");
 const GuidedReflection = require("./models/GuidedReflection");
 const JournalEntry = require("./models/JournalEntry");
+const Reminder = require("./models/Reminder");
 
 const authenticateToken = require("./middleware/authMiddleware");
 
@@ -1209,3 +1210,279 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
   }
 });
 
+// ==================== REMINDER ROUTES ====================
+
+// Get all reminders for the logged-in user
+app.get("/api/reminders", authenticateToken, async (req, res) => {
+  try {
+    const reminders = await Reminder.find({
+      userId: req.user.userId,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({ reminders });
+  } catch (error) {
+    console.error("Reminder fetch error:", error);
+    res.status(500).json({
+      message: "Error fetching reminders",
+    });
+  }
+});
+
+app.post("/api/reminders/setup-defaults", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const defaultReminders = [
+      {
+        reminderType: "hydration",
+        title: "Hydration",
+        description: "Take a short water break",
+        scheduleType: "interval",
+        startTime: "10:00",
+        endTime: "18:00",
+        intervalMinutes: 120,
+        repeat: "daily",
+      },
+      {
+        reminderType: "sun_break",
+        title: "Sun Break",
+        description: "Take a short break and spend some time outdoors",
+        scheduleType: "fixed",
+        time: "11:00",
+        repeat: "daily",
+      },
+      {
+        reminderType: "movement",
+        title: "Movement Break",
+        description: "Take a moment to stretch or move around",
+        scheduleType: "interval",
+        startTime: "09:00",
+        endTime: "18:00",
+        intervalMinutes: 90,
+        repeat: "daily",
+      },
+      {
+        reminderType: "breathing",
+        title: "Breathing Reset",
+        description: "Take a few minutes to slow down and breathe",
+        scheduleType: "fixed",
+        time: "15:00",
+        repeat: "daily",
+      },
+      {
+        reminderType: "mood_checkin",
+        title: "Mood Check-in",
+        description: "Take a moment to notice how you're feeling",
+        scheduleType: "fixed",
+        time: "20:00",
+        repeat: "daily",
+      },
+      {
+        reminderType: "journal",
+        title: "Journal",
+        description: "Reflect on your day and put your thoughts into words",
+        scheduleType: "fixed",
+        time: "21:30",
+        repeat: "daily",
+      },
+    ];
+
+    const createdReminders = [];
+
+    for (const reminder of defaultReminders) {
+      const existingReminder = await Reminder.findOne({
+        userId,
+        reminderType: reminder.reminderType,
+        defaultReminder: true,
+      });
+
+      if (existingReminder) {
+        createdReminders.push(existingReminder);
+        continue;
+      }
+
+      try {
+        const newReminder = await Reminder.create({
+          ...reminder,
+          userId,
+          defaultReminder: true,
+          status: "active",
+        });
+
+        createdReminders.push(newReminder);
+      } catch (error) {
+        // Another setup request may have created it at the same time.
+        if (error.code === 11000) {
+          const existingReminder = await Reminder.findOne({
+            userId,
+            reminderType: reminder.reminderType,
+            defaultReminder: true,
+          });
+
+          if (existingReminder) {
+            createdReminders.push(existingReminder);
+          } else {
+            throw error;
+          }
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    res.status(200).json({
+      message: "Default reminders are ready",
+      reminders: createdReminders,
+      created: createdReminders.length > 0,
+    });
+  } catch (error) {
+    console.error("Default reminder setup error:", error);
+
+    res.status(500).json({
+      message: "Error setting up default reminders",
+    });
+  }
+});
+
+// Create a new reminder
+app.post("/api/reminders", authenticateToken, async (req, res) => {
+  try {
+    const {
+      reminderType,
+      title,
+      description,
+      scheduleType,
+      time,
+      startTime,
+      endTime,
+      intervalMinutes,
+      repeat,
+    } = req.body;
+
+    if (!reminderType || !title || !scheduleType) {
+      return res.status(400).json({
+        message: "Reminder type, title, and schedule type are required",
+      });
+    }
+
+    if (scheduleType === "fixed" && !time) {
+      return res.status(400).json({
+        message: "Time is required for a fixed reminder",
+      });
+    }
+
+    if (scheduleType === "interval") {
+      if (!startTime || !endTime || !intervalMinutes) {
+        return res.status(400).json({
+          message:
+            "Start time, end time, and interval are required for an interval reminder",
+        });
+      }
+    }
+
+    const reminder = new Reminder({
+      userId: req.user.userId,
+      reminderType,
+      title,
+      description: description || "",
+      scheduleType,
+      time: scheduleType === "fixed" ? time : "",
+      startTime: scheduleType === "interval" ? startTime : "",
+      endTime: scheduleType === "interval" ? endTime : "",
+      intervalMinutes:
+        scheduleType === "interval"
+          ? Number(intervalMinutes)
+          : null,
+      repeat: repeat || "daily",
+      status: "active",
+    });
+
+    await reminder.save();
+
+    res.status(201).json({
+      message: "Reminder created successfully",
+      reminder,
+    });
+  } catch (error) {
+    console.error("Reminder creation error:", error);
+    res.status(500).json({
+      message: "Error creating reminder",
+    });
+  }
+});
+
+
+// Update a reminder
+app.patch("/api/reminders/:id", authenticateToken, async (req, res) => {
+  try {
+    const reminder = await Reminder.findOne({
+      _id: req.params.id,
+      userId: req.user.userId,
+    });
+
+    if (!reminder) {
+      return res.status(404).json({
+        message: "Reminder not found",
+      });
+    }
+
+    const allowedFields = [
+      "reminderType",
+      "title",
+      "description",
+      "scheduleType",
+      "time",
+      "startTime",
+      "endTime",
+      "intervalMinutes",
+      "repeat",
+      "status",
+    ];
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        reminder[field] = req.body[field];
+      }
+    });
+
+    reminder.updatedAt = new Date();
+
+    await reminder.save();
+
+    res.status(200).json({
+      message: "Reminder updated successfully",
+      reminder,
+    });
+  } catch (error) {
+    console.error("Reminder update error:", error);
+    res.status(500).json({
+      message: "Error updating reminder",
+    });
+  }
+});
+
+
+// Delete a reminder
+app.delete("/api/reminders/:id", authenticateToken, async (req, res) => {
+  try {
+    const reminder = await Reminder.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.userId,
+    });
+
+    if (!reminder) {
+      return res.status(404).json({
+        message: "Reminder not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Reminder deleted successfully",
+    });
+  } catch (error) {
+    console.error("Reminder deletion error:", error);
+    res.status(500).json({
+      message: "Error deleting reminder",
+    });
+  }
+});

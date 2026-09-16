@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SomaticStress from "./pages/SomaticStress";
 import ShiftCheckin from "./pages/ShiftCheckin";
 import PostShiftDecompression from "./pages/PostShiftDecompression";
+import Reminders from "./pages/Reminders";
 
 function App() {
   const handleLogout = () => {
@@ -86,12 +87,16 @@ function App() {
               📔 Journal
             </NavLink>
 
+            <NavLink to="/reminders" className="nav-item">
+              ⏱️ Reminders
+            </NavLink>
+
             <NavLink to="/community" className="nav-item">
               👥 Community
             </NavLink>
 
             <button className="nav-item">🎯 Challenges</button>
-            <button className="nav-item">🔔 Reminders</button>
+
             <button className="nav-item">📚 Resource Hub</button>
             <button className="nav-item">🩺 Professional Support</button>
 
@@ -213,6 +218,14 @@ function App() {
               }
             />
 
+            <Route
+              path="/reminders"
+              element={
+                <ProtectedRoute>
+                  <Reminders />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/community"
               element={
