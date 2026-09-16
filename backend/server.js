@@ -19,6 +19,7 @@ const Intervention = require("./models/Intervention");
 const ShiftCheckin = require("./models/ShiftCheckin");
 const PostShiftDecompression = require("./models/PostShiftDecompression");
 const GuidedReflection = require("./models/GuidedReflection");
+const JournalEntry = require("./models/JournalEntry");
 
 const authenticateToken = require("./middleware/authMiddleware");
 
@@ -843,6 +844,96 @@ app.post(
 
       res.status(500).json({
         message: "Error saving guided reflection.",
+      });
+    }
+  }
+);
+
+// ==================== JOURNAL ROUTES ====================
+
+// Get all journal entries for the logged-in user
+app.get("/api/journal", authenticateToken, async (req, res) => {
+  try {
+    const entries = await JournalEntry.find({
+      userId: req.user.userId,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({ entries });
+  } catch (error) {
+    console.error("Journal fetch error:", error);
+    res.status(500).json({
+      message: "Error fetching journal entries",
+    });
+  }
+});
+
+// Create a new journal entry
+app.post("/api/journal", authenticateToken, async (req, res) => {
+  try {
+    const {
+      title,
+      content,
+      emotion,
+      emotionIntensity,
+    } = req.body;
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({
+        message: "Journal content is required",
+      });
+    }
+
+    const journalEntry = new JournalEntry({
+      userId: req.user.userId,
+      title: title || "",
+      content: content.trim(),
+      emotion: emotion || "",
+      emotionIntensity:
+        emotionIntensity !== null &&
+        emotionIntensity !== undefined &&
+        emotionIntensity !== ""
+          ? Number(emotionIntensity)
+          : null,
+    });
+
+    await journalEntry.save();
+
+    res.status(201).json({
+      message: "Journal entry saved successfully",
+      entry: journalEntry,
+    });
+  } catch (error) {
+    console.error("Journal creation error:", error);
+    res.status(500).json({
+      message: "Error saving journal entry",
+    });
+  }
+});
+
+// Delete a journal entry
+app.delete(
+  "/api/journal/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const entry = await JournalEntry.findOneAndDelete({
+        _id: req.params.id,
+        userId: req.user.userId,
+      });
+
+      if (!entry) {
+        return res.status(404).json({
+          message: "Journal entry not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "Journal entry deleted successfully",
+      });
+    } catch (error) {
+      console.error("Journal deletion error:", error);
+      res.status(500).json({
+        message: "Error deleting journal entry",
       });
     }
   }
