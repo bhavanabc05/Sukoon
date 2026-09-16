@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import InterventionActivity from "../components/InterventionActivity";
 import "./Interventions.css";
+import { apiFetch } from "../utils/api";
 import GroundingActivity from "../components/GroundingActivity";
+import MindfulBreathingActivity from "../components/MindfulBreathingActivity";
+import ProgressiveMuscleRelaxationActivity from "../components/ProgressiveMuscleRelaxationActivity";
+import GuidedReflectionActivity from "../components/GuidedReflectionActivity";
 
 function Interventions() {
-  const token = localStorage.getItem("token");
   const [interventions, setInterventions] = useState([]);
   const [selectedIntervention, setSelectedIntervention] = useState(null);
   const [userInterventionId, setUserInterventionId] = useState(null);
@@ -19,14 +22,11 @@ function Interventions() {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch(
-          "http://localhost:5000/api/interventions",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+        const response = await apiFetch("/api/interventions");
+
+        if (!response) {
+          return;
+        }
 
         const data = await response.json();
 
@@ -52,21 +52,16 @@ function Interventions() {
       setError("");
       setSuccessMessage("");
 
-      const token = localStorage.getItem("token");
+      const response = await apiFetch("/api/interventions/start", {
+        method: "POST",
+        body: JSON.stringify({
+          interventionId: intervention._id,
+        }),
+      });
 
-      const response = await fetch(
-        "http://localhost:5000/api/interventions/start",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            interventionId: intervention._id,
-          }),
-        },
-      );
+      if (!response) {
+        return;
+      }
 
       const data = await response.json();
 
@@ -94,15 +89,16 @@ function Interventions() {
       setError("");
       setSuccessMessage("");
 
-      const response = await fetch(
-        `http://localhost:5000/api/interventions/${userInterventionId}/complete`,
+      const response = await apiFetch(
+        `/api/interventions/${userInterventionId}/complete`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
+
+      if (!response) {
+        return;
+      }
 
       const data = await response.json();
 
@@ -165,6 +161,22 @@ function Interventions() {
           />
         ) : selectedIntervention.type === "grounding" ? (
           <GroundingActivity
+            intervention={selectedIntervention}
+            onComplete={handleComplete}
+          />
+        ) : selectedIntervention.type === "mindfulness" &&
+          selectedIntervention.title === "Mindful Breathing" ? (
+          <MindfulBreathingActivity
+            intervention={selectedIntervention}
+            onComplete={handleComplete}
+          />
+        ) : selectedIntervention.type === "relaxation" ? (
+          <ProgressiveMuscleRelaxationActivity
+            intervention={selectedIntervention}
+            onComplete={handleComplete}
+          />
+        ) : selectedIntervention.type === "reflection" ? (
+          <GuidedReflectionActivity
             intervention={selectedIntervention}
             onComplete={handleComplete}
           />

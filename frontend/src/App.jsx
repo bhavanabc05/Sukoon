@@ -19,6 +19,11 @@ import ShiftCheckin from "./pages/ShiftCheckin";
 import PostShiftDecompression from "./pages/PostShiftDecompression";
 
 function App() {
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
+
   return (
     <BrowserRouter>
       <div className="app">
@@ -95,6 +100,9 @@ function App() {
             <NavLink to="/profile" className="nav-item">
               👤 Profile
             </NavLink>
+            <button className="nav-item logout-button" onClick={handleLogout}>
+              🚪 Logout
+            </button>
           </nav>
         </aside>
 

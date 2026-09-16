@@ -434,3 +434,432 @@
   color: #64748b;
   font-size: 13px;
 }
+
+/* =========================================================
+   Progressive Muscle Relaxation
+   ========================================================= */
+
+.pmr-activity-card {
+  max-width: 820px;
+}
+
+.pmr-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.pmr-welcome {
+  max-width: 650px;
+  margin: 28px auto;
+  text-align: center;
+}
+
+.pmr-welcome h2 {
+  margin-bottom: 12px;
+}
+
+.pmr-welcome p {
+  line-height: 1.7;
+}
+
+.pmr-safety {
+  margin-top: 24px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #f4f7fa;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.pmr-starting-indicator {
+  margin-top: 28px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f4f7fa;
+}
+
+.pmr-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.pmr-area-title {
+  text-align: center;
+  margin-top: -8px;
+  color: #64748b;
+}
+
+/* Body illustration */
+
+.pmr-body-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 25px auto;
+  min-height: 330px;
+}
+
+.pmr-body {
+  position: relative;
+  width: 180px;
+  height: 310px;
+}
+
+/* Head */
+
+.pmr-head {
+  position: absolute;
+  width: 58px;
+  height: 65px;
+  border-radius: 50%;
+  left: 61px;
+  top: 0;
+  background: #dce5ed;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.pmr-face {
+  position: absolute;
+  left: 19px;
+  top: 25px;
+  font-size: 12px;
+  letter-spacing: 8px;
+}
+
+/* Neck */
+
+.pmr-neck {
+  position: absolute;
+  width: 25px;
+  height: 28px;
+  left: 78px;
+  top: 58px;
+  border-radius: 8px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+/* Shoulders */
+
+.pmr-shoulders {
+  position: absolute;
+  width: 105px;
+  height: 38px;
+  left: 38px;
+  top: 75px;
+  border-radius: 35px 35px 15px 15px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+/* Chest */
+
+.pmr-chest {
+  position: absolute;
+  width: 82px;
+  height: 75px;
+  left: 49px;
+  top: 92px;
+  border-radius: 25px 25px 18px 18px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+/* Stomach */
+
+.pmr-stomach {
+  position: absolute;
+  width: 72px;
+  height: 65px;
+  left: 54px;
+  top: 155px;
+  border-radius: 12px 12px 20px 20px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+/* Back */
+
+.pmr-back {
+  position: absolute;
+  width: 82px;
+  height: 110px;
+  left: 49px;
+  top: 92px;
+  border-radius: 22px;
+  background: #dce5ed;
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+/* Arms */
+
+.pmr-arm-left,
+.pmr-arm-right {
+  position: absolute;
+  width: 24px;
+  height: 120px;
+  top: 92px;
+  border-radius: 18px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+.pmr-arm-left {
+  left: 22px;
+  transform: rotate(8deg);
+}
+
+.pmr-arm-right {
+  right: 22px;
+  transform: rotate(-8deg);
+}
+
+/* Hands */
+
+.pmr-hand-left,
+.pmr-hand-right {
+  position: absolute;
+  width: 30px;
+  height: 28px;
+  top: 205px;
+  border-radius: 50%;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+.pmr-hand-left {
+  left: 13px;
+}
+
+.pmr-hand-right {
+  right: 13px;
+}
+
+/* Thighs */
+
+.pmr-thigh-left,
+.pmr-thigh-right {
+  position: absolute;
+  width: 34px;
+  height: 78px;
+  top: 208px;
+  border-radius: 18px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+.pmr-thigh-left {
+  left: 53px;
+}
+
+.pmr-thigh-right {
+  right: 53px;
+}
+
+/* Calves */
+
+.pmr-calf-left,
+.pmr-calf-right {
+  position: absolute;
+  width: 27px;
+  height: 65px;
+  top: 260px;
+  border-radius: 15px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+.pmr-calf-left {
+  left: 57px;
+}
+
+.pmr-calf-right {
+  right: 57px;
+}
+
+/* Feet */
+
+.pmr-foot-left,
+.pmr-foot-right {
+  position: absolute;
+  width: 43px;
+  height: 20px;
+  top: 295px;
+  border-radius: 12px 18px 8px 8px;
+  background: #dce5ed;
+  transition: all 0.4s ease;
+}
+
+.pmr-foot-left {
+  left: 40px;
+}
+
+.pmr-foot-right {
+  right: 40px;
+}
+
+/* Active body area */
+
+.pmr-body-part.pmr-active {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 6px rgba(100, 116, 139, 0.12);
+}
+
+/* Tense animation */
+
+.pmr-body.tense .pmr-body-part.pmr-active {
+  animation: pmrTensePulse 1.2s ease-in-out infinite;
+}
+
+/* Release animation */
+
+.pmr-body.release .pmr-body-part.pmr-active {
+  animation: pmrRelease 2s ease-in-out infinite;
+}
+
+/* Breathing animation */
+
+.pmr-body.breathe .pmr-chest {
+  animation: pmrBreathing 4s ease-in-out infinite;
+}
+
+/* Wake animation */
+
+.pmr-body.wake .pmr-body-part {
+  animation: pmrWake 2s ease-in-out infinite;
+}
+
+@keyframes pmrTensePulse {
+  0%,
+  100% {
+    transform: scale(1.04);
+  }
+
+  50% {
+    transform: scale(1.11);
+  }
+}
+
+@keyframes pmrRelease {
+  0%,
+  100% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.96);
+    opacity: 0.7;
+  }
+}
+
+@keyframes pmrBreathing {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes pmrWake {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Phase information */
+
+.pmr-phase-card {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 22px;
+  text-align: center;
+  border-radius: 18px;
+  background: #f7f9fb;
+}
+
+.pmr-phase {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.pmr-timer {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 8px 0 15px;
+}
+
+.pmr-phase-card p {
+  line-height: 1.6;
+  margin: 0;
+}
+
+.pmr-progress-track {
+  width: 100%;
+  height: 7px;
+  margin: 28px 0 10px;
+  border-radius: 10px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.pmr-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: #64748b;
+  transition: width 0.9s linear;
+}
+
+.pmr-completion-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.pmr-finish-message {
+  max-width: 600px;
+  margin: 28px auto;
+  padding: 22px;
+  border-radius: 18px;
+  background: #f7f9fb;
+}
+
+.pmr-finish-message p {
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .pmr-body-container {
+    min-height: 290px;
+  }
+
+  .pmr-body {
+    transform: scale(0.88);
+  }
+
+  .pmr-top-row {
+    font-size: 0.8rem;
+  }
+
+  .pmr-timer {
+    font-size: 2.6rem;
+  }
+}

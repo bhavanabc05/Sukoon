@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./EmotionalGranularity.css";
 import EmotionWheel from "../components/EmotionWheel";
+import { apiFetch } from "../utils/api";
 
 const emotionData = {
   sad: {
@@ -109,32 +110,22 @@ function EmotionalGranularity() {
       return;
     }
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setError("Your session has expired. Please login again.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/emotional-granularity",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            primaryEmotion,
-            secondaryEmotion,
-            specificEmotion,
-            intensity: Number(intensity),
-          }),
-        },
-      );
+      const response = await apiFetch("/api/emotional-granularity", {
+        method: "POST",
+        body: JSON.stringify({
+          primaryEmotion,
+          secondaryEmotion,
+          specificEmotion,
+          intensity: Number(intensity),
+        }),
+      });
+
+      if (!response) {
+        return;
+      }
 
       const data = await response.json();
 

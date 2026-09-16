@@ -1,9 +1,8 @@
 import { useState } from "react";
 import "./ShiftCheckin.css";
+import { apiFetch } from "../utils/api";
 
 function ShiftCheckin() {
-  const token = localStorage.getItem("token");
-
   const [shiftType, setShiftType] = useState("");
   const [emotion, setEmotion] = useState("");
   const [moodIntensity, setMoodIntensity] = useState(5);
@@ -42,12 +41,8 @@ function ShiftCheckin() {
       setError("");
       setSuccessMessage("");
 
-      const response = await fetch("http://localhost:5000/api/shift-checkins", {
+      const response = await apiFetch("/api/shift-checkins", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
           shiftType,
           mood: {
@@ -60,6 +55,10 @@ function ShiftCheckin() {
           note,
         }),
       });
+
+      if (!response) {
+        return;
+      }
 
       const data = await response.json();
 

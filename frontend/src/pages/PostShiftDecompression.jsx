@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import "./PostShiftDecompression.css";
+import { apiFetch } from "../utils/api";
 
 import InterventionActivity from "../components/InterventionActivity";
 import GroundingActivity from "../components/GroundingActivity";
+import MindfulBreathingActivity from "../components/MindfulBreathingActivity";
 
 function PostShiftDecompression() {
-  const token = localStorage.getItem("token");
-
   const [shiftType, setShiftType] = useState("");
   const [mood, setMood] = useState("");
   const [moodIntensity, setMoodIntensity] = useState(5);
@@ -59,6 +59,13 @@ function PostShiftDecompression() {
       duration: "3–5 min",
     },
     {
+      type: "mindfulness",
+      icon: "🌿",
+      title: "Mindful Breathing",
+      description: "Slow down and bring your attention back to your breath.",
+      duration: "2–3 min",
+    },
+    {
       type: "relaxation",
       icon: "🧘",
       title: "Release tension",
@@ -92,14 +99,11 @@ function PostShiftDecompression() {
       try {
         setInterventionsLoading(true);
 
-        const response = await fetch(
-          "http://localhost:5000/api/interventions",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+        const response = await apiFetch("/api/interventions");
+
+        if (!response) {
+          return;
+        }
 
         const data = await response.json();
 
@@ -120,7 +124,7 @@ function PostShiftDecompression() {
     };
 
     fetchInterventions();
-  }, [token]);
+  }, []);
 
   /*
    * Find the actual intervention that matches
@@ -128,11 +132,24 @@ function PostShiftDecompression() {
    */
   const getMatchingIntervention = (activityType) => {
     if (activityType === "breathing") {
-      return interventions.find((item) => item.type === "breathing");
+      return interventions.find(
+        (item) =>
+          item.type === "breathing" && item.title === "Box Breathing Exercise",
+      );
     }
 
     if (activityType === "grounding") {
-      return interventions.find((item) => item.type === "grounding");
+      return interventions.find(
+        (item) =>
+          item.type === "grounding" && item.title === "5-4-3-2-1 Grounding",
+      );
+    }
+
+    if (activityType === "mindfulness") {
+      return interventions.find(
+        (item) =>
+          item.type === "mindfulness" && item.title === "Mindful Breathing",
+      );
     }
 
     return null;
@@ -148,7 +165,9 @@ function PostShiftDecompression() {
 
     if (
       interventionsLoading &&
-      (selectedActivity === "breathing" || selectedActivity === "grounding")
+      (selectedActivity === "breathing" ||
+        selectedActivity === "grounding" ||
+        selectedActivity === "mindfulness")
     ) {
       setError("Please wait while the guided activity loads.");
       return;
@@ -175,34 +194,31 @@ function PostShiftDecompression() {
         activityDuration = 3;
       }
 
-      const response = await fetch(
-        "http://localhost:5000/api/post-shift-decompression",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      const response = await apiFetch("/api/post-shift-decompression", {
+        method: "POST",
+        body: JSON.stringify({
+          shiftType,
+
+          emotionalState: {
+            mood: mood.toLowerCase(),
+            intensity: moodIntensity,
           },
-          body: JSON.stringify({
-            shiftType,
 
-            emotionalState: {
-              mood: mood.toLowerCase(),
-              intensity: moodIntensity,
-            },
+          stressLevel,
+          energyLevel,
 
-            stressLevel,
-            energyLevel,
+          selectedActivity,
 
-            selectedActivity,
+          activityDuration,
 
-            activityDuration,
+          reflection,
+          voiceTranscript,
+        }),
+      });
 
-            reflection,
-            voiceTranscript,
-          }),
-        },
-      );
+      if (!response) {
+        return;
+      }
 
       const data = await response.json();
 
@@ -238,15 +254,16 @@ function PostShiftDecompression() {
       setError("");
       setSuccessMessage("");
 
-      const response = await fetch(
-        `http://localhost:5000/api/post-shift-decompression/${decompressionId}/complete`,
+      const response = await apiFetch(
+        `/api/post-shift-decompression/${decompressionId}/complete`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
+
+      if (!response) {
+        return;
+      }
 
       const data = await response.json();
 
@@ -372,12 +389,36 @@ function PostShiftDecompression() {
       );
     }
 
+    if (selectedActivity === "mindfulness" && selectedIntervention) {
+      return (
+        <div className="post-shift-page">
+          <div className="post-shift-card">
+            <button
+              className="post-shift-back"
+              onClick={() => setStage("checkin")}
+            >
+              ← Back
+            </button>
+
+            <MindfulBreathingActivity
+              intervention={selectedIntervention}
+              onComplete={handleComplete}
+            />
+          </div>
+        </div>
+      );
+    }
+
     /*
      * If a guided activity was selected but
      * the intervention library hasn't loaded,
      * show a useful message instead of crashing.
      */
-    if (selectedActivity === "breathing" || selectedActivity === "grounding") {
+    if (
+      selectedActivity === "breathing" ||
+      selectedActivity === "grounding" ||
+      selectedActivity === "mindfulness"
+    ) {
       return (
         <div className="post-shift-page">
           <div className="post-shift-card">
@@ -680,14 +721,16 @@ function PostShiftDecompression() {
             loading ||
             (interventionsLoading &&
               (selectedActivity === "breathing" ||
-                selectedActivity === "grounding"))
+                selectedActivity === "grounding" ||
+                selectedActivity === "mindfulness"))
           }
         >
           {loading
             ? "Saving..."
             : interventionsLoading &&
                 (selectedActivity === "breathing" ||
-                  selectedActivity === "grounding")
+                  selectedActivity === "grounding" ||
+                  selectedActivity === "mindfulness")
               ? "Preparing activity..."
               : "Continue to Decompression →"}
         </button>

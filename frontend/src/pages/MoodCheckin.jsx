@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./MoodCheckin.css";
+import { apiFetch } from "../utils/api";
 const emotions = [
   { name: "Calm", emoji: "😌" },
   { name: "Content", emoji: "🙂" },
@@ -32,27 +33,20 @@ function MoodCheckin() {
       return;
     }
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setError("Your session has expired. Please login again.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/moods", {
+      const response = await apiFetch("/api/moods", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
           mood: selectedMood,
           intensity: Number(intensity),
         }),
       });
+
+      if (!response) {
+        return;
+      }
 
       const data = await response.json();
 

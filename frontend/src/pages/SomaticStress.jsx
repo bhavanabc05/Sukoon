@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SomaticBodyMap from "../components/SomaticBodyMap";
 import "./SomaticStress.css";
+import { apiFetch } from "../utils/api";
 
 function SomaticStress() {
   const [symptoms, setSymptoms] = useState([]);
@@ -23,25 +24,17 @@ function SomaticStress() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("You are not logged in. Please login again.");
-        return;
-      }
-
-      const response = await fetch("http://localhost:5000/api/somatic-stress", {
+      const response = await apiFetch("/api/somatic-stress", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
           symptoms,
           severity: Number(severity),
         }),
       });
 
+      if (!response) {
+        return;
+      }
       const data = await response.json();
 
       if (!response.ok) {

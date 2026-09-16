@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./PHQ4Assessment.css";
 import PHQ4TrendChart from "../components/PHQ4TrendChart";
+import { apiFetch } from "../utils/api";
 
 const questions = [
   {
@@ -52,19 +53,11 @@ function PHQ4Assessment() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const response = await apiFetch("/api/phq4");
 
-        if (!token) {
-          setHistoryLoading(false);
+        if (!response) {
           return;
         }
-
-        const response = await fetch("http://localhost:5000/api/phq4", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
 
         const data = await response.json();
 
@@ -96,25 +89,16 @@ function PHQ4Assessment() {
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("You are not logged in. Please log in again.");
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch("http://localhost:5000/api/phq4", {
+      const response = await apiFetch("/api/phq4", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
           responses: answers,
         }),
       });
 
+      if (!response) {
+        return;
+      }
       const data = await response.json();
 
       if (!response.ok) {

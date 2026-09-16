@@ -64,6 +64,7 @@ const postShiftDecompressionSchema = new mongoose.Schema(
       enum: [
         "breathing",
         "grounding",
+        "mindfulness",
         "relaxation",
         "reflection",
         "none",
