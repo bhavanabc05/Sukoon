@@ -938,3 +938,274 @@ app.delete(
     }
   }
 );
+
+// ==================== EMOTION INSIGHTS ROUTE ====================
+
+app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const [
+      moods,
+      emotionalGranularity,
+      somaticStress,
+      phq4Assessments,
+      shiftCheckins,
+      postShiftDecompressions,
+      journalEntries,
+    ] = await Promise.all([
+      MoodRecord.find({ userId }).sort({ timestamp: -1 }).limit(30),
+
+      EmotionalGranularity.find({ userId })
+        .sort({ timestamp: -1 })
+        .limit(30),
+
+      SomaticStressRecord.find({ userId })
+        .sort({ timestamp: -1 })
+        .limit(30),
+
+      PHQ4Assessment.find({ userId })
+        .sort({ completedAt: -1 })
+        .limit(10),
+
+      ShiftCheckin.find({ userId })
+        .sort({ checkInTime: -1 })
+        .limit(30),
+
+      PostShiftDecompression.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(30),
+
+      JournalEntry.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(30),
+    ]);
+
+    // -------------------- MOOD SUMMARY --------------------
+
+    const moodCount = {};
+
+    moods.forEach((record) => {
+      const mood = record.mood?.toLowerCase();
+
+      if (mood) {
+        moodCount[mood] = (moodCount[mood] || 0) + 1;
+      }
+    });
+
+    const mostFrequentMood =
+      Object.entries(moodCount).length > 0
+        ? Object.entries(moodCount).sort((a, b) => b[1] - a[1])[0][0]
+        : null;
+
+    const averageMoodIntensity =
+      moods.length > 0
+        ? Number(
+            (
+              moods.reduce((sum, record) => sum + record.intensity, 0) /
+              moods.length
+            ).toFixed(1)
+          )
+        : null;
+
+    // -------------------- EMOTION SUMMARY --------------------
+
+    const emotionCount = {};
+
+    emotionalGranularity.forEach((record) => {
+      const emotion = record.specificEmotion?.trim();
+
+      if (emotion) {
+        emotionCount[emotion] = (emotionCount[emotion] || 0) + 1;
+      }
+    });
+
+    const frequentSpecificEmotions = Object.entries(emotionCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([emotion, count]) => ({
+        emotion,
+        count,
+      }));
+
+    // -------------------- STRESS SUMMARY --------------------
+
+    const averageSomaticStress =
+      somaticStress.length > 0
+        ? Number(
+            (
+              somaticStress.reduce(
+                (sum, record) => sum + record.severity,
+                0
+              ) / somaticStress.length
+            ).toFixed(1)
+          )
+        : null;
+
+    const averageShiftStress =
+      shiftCheckins.length > 0
+        ? Number(
+            (
+              shiftCheckins.reduce(
+                (sum, record) => sum + record.stressLevel,
+                0
+              ) / shiftCheckins.length
+            ).toFixed(1)
+          )
+        : null;
+
+    // -------------------- SHIFT SUMMARY --------------------
+
+    const shiftMoodCount = {};
+
+    shiftCheckins.forEach((record) => {
+      const emotion = record.mood?.emotion?.toLowerCase();
+
+      if (emotion) {
+        shiftMoodCount[emotion] =
+          (shiftMoodCount[emotion] || 0) + 1;
+      }
+    });
+
+    const frequentShiftMoods = Object.entries(shiftMoodCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([emotion, count]) => ({
+        emotion,
+        count,
+      }));
+
+    // -------------------- PHQ-4 SUMMARY --------------------
+
+    const latestPHQ4 =
+      phq4Assessments.length > 0
+        ? phq4Assessments[0]
+        : null;
+
+    // -------------------- JOURNAL SUMMARY --------------------
+
+    const journalEmotionCount = {};
+
+    journalEntries.forEach((entry) => {
+      const emotion = entry.emotion?.toLowerCase();
+
+      if (emotion) {
+        journalEmotionCount[emotion] =
+          (journalEmotionCount[emotion] || 0) + 1;
+      }
+    });
+
+    const frequentJournalEmotions = Object.entries(
+      journalEmotionCount
+    )
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([emotion, count]) => ({
+        emotion,
+        count,
+      }));
+
+    // -------------------- RECENT ACTIVITY --------------------
+
+    const recentActivity = [
+      ...moods.map((record) => ({
+        type: "mood",
+        label: "Mood Check-in",
+        emotion: record.mood,
+        intensity: record.intensity,
+        timestamp: record.timestamp,
+      })),
+
+      ...emotionalGranularity.map((record) => ({
+        type: "emotional_granularity",
+        label: "Emotional Granularity",
+        emotion: record.specificEmotion,
+        intensity: record.intensity,
+        timestamp: record.timestamp,
+      })),
+
+      ...shiftCheckins.map((record) => ({
+        type: "shift_checkin",
+        label: "Shift Check-in",
+        emotion: record.mood?.emotion,
+        intensity: record.mood?.intensity,
+        stressLevel: record.stressLevel,
+        timestamp: record.checkInTime,
+      })),
+
+      ...postShiftDecompressions.map((record) => ({
+        type: "post_shift",
+        label: "Post-Shift Decompression",
+        emotion: record.emotionalState?.mood,
+        intensity: record.emotionalState?.intensity,
+        stressLevel: record.stressLevel,
+        timestamp: record.createdAt,
+      })),
+
+      ...journalEntries.map((record) => ({
+        type: "journal",
+        label: "Journal",
+        emotion: record.emotion || null,
+        intensity: record.emotionIntensity || null,
+        timestamp: record.createdAt,
+      })),
+    ]
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp) - new Date(a.timestamp)
+      )
+      .slice(0, 40);
+
+    // -------------------- RESPONSE --------------------
+
+    res.status(200).json({
+      summary: {
+        totalMoodCheckins: moods.length,
+        totalEmotionalGranularityRecords:
+          emotionalGranularity.length,
+        totalSomaticStressRecords: somaticStress.length,
+        totalShiftCheckins: shiftCheckins.length,
+        totalPostShiftDecompressions:
+          postShiftDecompressions.length,
+        totalJournalEntries: journalEntries.length,
+      },
+
+      mood: {
+        mostFrequent: mostFrequentMood,
+        averageIntensity: averageMoodIntensity,
+        distribution: moodCount,
+      },
+
+      emotions: {
+        frequentSpecificEmotions,
+      },
+
+      stress: {
+        averageSomaticStress,
+        averageShiftStress,
+      },
+
+      shift: {
+        frequentMoods: frequentShiftMoods,
+      },
+
+      phq4: {
+        latest: latestPHQ4,
+        history: phq4Assessments,
+      },
+
+      journal: {
+        frequentEmotions: frequentJournalEmotions,
+      },
+
+      recentActivity,
+    });
+  } catch (error) {
+    console.error("Emotion insights error:", error);
+
+    res.status(500).json({
+      message: "Error generating emotion insights",
+    });
+  }
+});
+
