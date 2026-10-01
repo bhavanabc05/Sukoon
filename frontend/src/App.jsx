@@ -6,7 +6,6 @@ import MoodCheckin from "./pages/MoodCheckin";
 import EmotionInsights from "./pages/EmotionInsights";
 import PHQ4Assessment from "./pages/PHQ4Assessment";
 import Journal from "./pages/Journal";
-import Chatbot from "./pages/Chatbot";
 import Interventions from "./pages/Interventions";
 import Community from "./pages/Community";
 import Profile from "./pages/Profile";
@@ -18,6 +17,18 @@ import SomaticStress from "./pages/SomaticStress";
 import ShiftCheckin from "./pages/ShiftCheckin";
 import PostShiftDecompression from "./pages/PostShiftDecompression";
 import Reminders from "./pages/Reminders";
+import SukoonChat from "./pages/SukoonChat";
+import Challenges from "./pages/Challenges";
+import ChallengeDetails from "./pages/ChallengeDetails";
+import ReminderNotification from "./components/ReminderNotification";
+import ResourceHub from "./pages/ResourceHub";
+import ResourceDetails from "./pages/ResourceDetails";
+import ResourceManagement from "./pages/ResourceManagement";
+import ProfessionalSupport from "./pages/ProfessionalSupport";
+
+import TextEmotion from "./pages/TextEmotion";
+import AudioEmotion from "./pages/AudioEmotion";
+import VideoEmotion from "./pages/VideoEmotion";
 
 function App() {
   const handleLogout = () => {
@@ -46,15 +57,26 @@ function App() {
               😊 Mood Check-in
             </NavLink>
 
+            <NavLink to="/shift-checkin" className="nav-item">
+              ⏰ Shift Check-in
+            </NavLink>
+
             <NavLink to="/emotional-granularity" className="nav-item">
               🎨 Emotional Granularity
             </NavLink>
-            <button className="nav-item">💬 Text Emotion</button>
-            <button className="nav-item">🎤 Audio Emotion</button>
-            <button className="nav-item">📷 Facial / Video Emotion</button>
             <NavLink to="/somatic-stress" className="nav-item">
               🧍 Somatic Stress Map
             </NavLink>
+            <NavLink to="/text-emotion" className="nav-item">
+              ✍️ Text Emotion
+            </NavLink>
+            <NavLink to="/audio-emotion" className="nav-item">
+              🎤 Audio Emotion
+            </NavLink>
+            <NavLink to="/video-emotion" className="nav-item">
+              🎥 Video Emotion
+            </NavLink>
+
             <p className="nav-heading">ANALYZE</p>
 
             <NavLink to="/emotion-insights" className="nav-item">
@@ -65,23 +87,7 @@ function App() {
               📝 PHQ-4 Assessment
             </NavLink>
 
-            <NavLink to="/shift-checkin" className="nav-item">
-              ⏰ Shift Check-in
-            </NavLink>
-
-            <p className="nav-heading">SUPPORT</p>
-
-            <NavLink to="/interventions" className="nav-item">
-              🧘 Interventions
-            </NavLink>
-
-            <NavLink to="/post-shift-decompression" className="nav-item">
-              🛌 Post-Shift Decompression
-            </NavLink>
-
-            <NavLink to="/chatbot" className="nav-item">
-              🤖 Sukoon Chat
-            </NavLink>
+            <p className="nav-heading">PERSONALIZE</p>
 
             <NavLink to="/journal" className="nav-item">
               📔 Journal
@@ -91,14 +97,39 @@ function App() {
               ⏱️ Reminders
             </NavLink>
 
+            <NavLink to="/interventions" className="nav-item">
+              🧘 Interventions
+            </NavLink>
+
+            <NavLink to="/post-shift-decompression" className="nav-item">
+              🛌 Post-Shift Decompression
+            </NavLink>
+
+            <p className="nav-heading">SUPPORT</p>
+
+            <NavLink to="/sukoon-chat" className="nav-item">
+              🤖 Sukoon Chat
+            </NavLink>
+            <NavLink to="/resource-hub" className="nav-item">
+              📚 Resource Hub
+            </NavLink>
+            <NavLink to="/interventions" className="nav-item">
+              🧘 Interventions
+            </NavLink>
+            <NavLink to="/post-shift-decompression" className="nav-item">
+              🛌 Post-Shift Decompression
+            </NavLink>
+            <NavLink to="/professional-support" className="nav-item">
+              🏥 Professional Support
+            </NavLink>
+
             <NavLink to="/community" className="nav-item">
               👥 Community
             </NavLink>
 
-            <button className="nav-item">🎯 Challenges</button>
-
-            <button className="nav-item">📚 Resource Hub</button>
-            <button className="nav-item">🩺 Professional Support</button>
+            <NavLink to="/challenges" className="nav-item">
+              🏆 Challenges
+            </NavLink>
 
             <p className="nav-heading">ACCOUNT</p>
 
@@ -204,7 +235,7 @@ function App() {
               path="/chatbot"
               element={
                 <ProtectedRoute>
-                  <Chatbot />
+                  <SukoonChat />
                 </ProtectedRoute>
               }
             />
@@ -243,7 +274,89 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/text-emotion"
+              element={
+                <ProtectedRoute>
+                  <TextEmotion />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audio-emotion"
+              element={
+                <ProtectedRoute>
+                  <AudioEmotion />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/video-emotion"
+              element={
+                <ProtectedRoute>
+                  <VideoEmotion />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sukoon-chat"
+              element={
+                <ProtectedRoute>
+                  <SukoonChat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/challenges"
+              element={
+                <ProtectedRoute>
+                  <Challenges />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/challenges/:challengeId"
+              element={
+                <ProtectedRoute>
+                  <ChallengeDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resource-hub"
+              element={
+                <ProtectedRoute>
+                  <ResourceHub />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resources
+              /:resourceId"
+              element={
+                <ProtectedRoute>
+                  <ResourceDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resource-management"
+              element={
+                <ProtectedRoute>
+                  <ResourceManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/professional-support"
+              element={
+                <ProtectedRoute>
+                  <ProfessionalSupport />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
+          <ReminderNotification />
         </main>
       </div>
     </BrowserRouter>

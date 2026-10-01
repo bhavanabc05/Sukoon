@@ -1,0 +1,269 @@
+.audio-emotion-page {
+  min-height: 100%;
+  padding: 32px;
+}
+
+.audio-emotion-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.audio-emotion-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.audio-emotion-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef4ff;
+  font-size: 28px;
+}
+
+.audio-emotion-header h1 {
+  margin: 0 0 6px;
+  font-size: 30px;
+}
+
+.audio-emotion-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.audio-record-card,
+.audio-result-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.record-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.recording-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: pulse 1s infinite;
+}
+
+.microphone-symbol {
+  font-size: 20px;
+}
+
+.recording-hint {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 24px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.record-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.record-button,
+.stop-button,
+.analyze-button,
+.reset-button {
+  border: none;
+  border-radius: 12px;
+  padding: 13px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.record-button:hover,
+.stop-button:hover,
+.analyze-button:hover,
+.reset-button:hover {
+  transform: translateY(-1px);
+}
+
+.record-button {
+  background: #4f46e5;
+  color: white;
+}
+
+.stop-button {
+  background: #ef4444;
+  color: white;
+}
+
+.audio-preview {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.audio-preview p {
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.audio-preview audio {
+  width: 100%;
+  max-width: 500px;
+}
+
+.analysis-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.analyze-button {
+  background: #111827;
+  color: white;
+}
+
+.analyze-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reset-button {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.audio-error {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  text-align: center;
+}
+
+.audio-result-card {
+  border: 1px solid #e5e7eb;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.result-header > span {
+  font-size: 26px;
+}
+
+.result-header h2 {
+  margin: 0 0 4px;
+  font-size: 21px;
+}
+
+.result-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.result-item {
+  padding: 20px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.result-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.emotion-value {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.confidence-value {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.transcript-section {
+  margin-top: 8px;
+}
+
+.transcript-box {
+  padding: 16px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #374151;
+  line-height: 1.6;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 700px) {
+  .audio-emotion-page {
+    padding: 20px;
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-actions {
+    flex-direction: column;
+  }
+
+  .analysis-actions button {
+    width: 100%;
+  }
+}

@@ -179,7 +179,18 @@ function Reminders() {
         throw new Error(setupData.message || "Failed to set up reminders");
       }
 
-      setReminders(setupData.reminders || []);
+      // Fetch the complete reminder list after defaults are ready
+      const remindersResponse = await apiFetch("/api/reminders");
+
+      if (!remindersResponse) return;
+
+      const remindersData = await remindersResponse.json();
+
+      if (!remindersResponse.ok) {
+        throw new Error(remindersData.message || "Failed to load reminders");
+      }
+
+      setReminders(remindersData.reminders || []);
     } catch (err) {
       console.error("Reminder fetch error:", err);
       setError(err.message || "Unable to load reminders.");

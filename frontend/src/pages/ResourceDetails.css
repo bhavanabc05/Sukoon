@@ -1,0 +1,185 @@
+.resource-details-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.resource-back-button {
+  border: none;
+  background: transparent;
+
+  padding: 0;
+  margin-bottom: 22px;
+
+  color: #43816f;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.resource-back-button:hover {
+  text-decoration: underline;
+}
+
+.resource-details-card {
+  background: #ffffff;
+
+  border: 1px solid #dfe9e5;
+  border-radius: 18px;
+
+  padding: 38px 42px;
+
+  box-shadow: 0 8px 28px rgba(37, 54, 48, 0.07);
+}
+
+.resource-details-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 20px;
+}
+
+.resource-details-type {
+  padding: 6px 10px;
+
+  border-radius: 6px;
+
+  background: #e8f3ee;
+
+  color: #43816f;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.resource-details-category {
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #899590;
+}
+
+.resource-details-card h1 {
+  margin: 0 0 14px;
+
+  font-size: 32px;
+  line-height: 1.25;
+
+  color: #253630;
+}
+
+.resource-details-description {
+  margin: 0;
+
+  max-width: 760px;
+
+  font-size: 17px;
+  line-height: 1.7;
+
+  color: #697872;
+}
+
+.resource-details-divider {
+  height: 1px;
+
+  margin: 30px 0;
+
+  background: #e6eeeb;
+}
+
+.resource-content-section h2,
+.resource-external-section h2 {
+  margin: 0 0 12px;
+
+  font-size: 20px;
+
+  color: #253630;
+}
+
+.resource-content-section p,
+.resource-external-section p {
+  margin: 0;
+
+  font-size: 15px;
+  line-height: 1.8;
+
+  color: #52645d;
+
+  white-space: pre-line;
+}
+
+.resource-external-section {
+  margin-top: 30px;
+  padding-top: 28px;
+
+  border-top: 1px solid #e6eeeb;
+}
+
+.resource-external-link {
+  display: inline-block;
+
+  margin-top: 16px;
+
+  padding: 11px 17px;
+
+  border-radius: 9px;
+
+  background: #43816f;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.resource-external-link:hover {
+  background: #356d5d;
+}
+
+.resource-details-source {
+  margin-top: 30px;
+  padding-top: 18px;
+
+  border-top: 1px solid #e6eeeb;
+
+  font-size: 13px;
+
+  color: #899590;
+}
+
+.resource-details-state {
+  padding: 60px 20px;
+
+  text-align: center;
+
+  color: #697872;
+}
+
+.resource-details-state.error {
+  color: #b45353;
+}
+
+@media (max-width: 700px) {
+  .resource-details-page {
+    padding: 20px;
+  }
+
+  .resource-details-card {
+    padding: 25px 22px;
+  }
+
+  .resource-details-card h1 {
+    font-size: 26px;
+  }
+
+  .resource-details-description {
+    font-size: 15px;
+  }
+}

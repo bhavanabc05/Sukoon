@@ -1,0 +1,334 @@
+.resource-management-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.resource-management-header {
+  margin-bottom: 28px;
+}
+
+.resource-management-eyebrow {
+  margin: 0 0 8px;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+
+  color: #43816f;
+}
+
+.resource-management-header h1 {
+  margin: 0 0 10px;
+
+  font-size: 32px;
+  color: #253630;
+}
+
+.resource-management-header p {
+  margin: 0;
+
+  color: #697872;
+  font-size: 15px;
+}
+
+.resource-management-message,
+.resource-management-error {
+  padding: 13px 16px;
+
+  margin-bottom: 20px;
+
+  border-radius: 9px;
+
+  font-size: 14px;
+}
+
+.resource-management-message {
+  background: #e8f3ee;
+  color: #356d5d;
+}
+
+.resource-management-error {
+  background: #fdf0f0;
+  color: #a44747;
+}
+
+.resource-form-card {
+  padding: 28px;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe9e5;
+  border-radius: 16px;
+
+  box-shadow: 0 5px 18px rgba(37, 54, 48, 0.06);
+
+  margin-bottom: 35px;
+}
+
+.resource-form-header {
+  margin-bottom: 24px;
+}
+
+.resource-form-header h2 {
+  margin: 0 0 6px;
+
+  font-size: 21px;
+  color: #253630;
+}
+
+.resource-form-header p {
+  margin: 0;
+
+  color: #697872;
+  font-size: 14px;
+}
+
+.resource-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.resource-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.resource-form-field.full {
+  grid-column: 1 / -1;
+}
+
+.resource-form-field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #52645d;
+}
+
+.resource-form-field input,
+.resource-form-field select,
+.resource-form-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 11px 13px;
+
+  border: 1px solid #d5e2dd;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  color: #253630;
+
+  outline: none;
+}
+
+.resource-form-field textarea {
+  resize: vertical;
+}
+
+.resource-form-field input:focus,
+.resource-form-field select:focus,
+.resource-form-field textarea:focus {
+  border-color: #43816f;
+  box-shadow: 0 0 0 3px rgba(67, 129, 111, 0.1);
+}
+
+.resource-form-actions {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 24px;
+}
+
+.resource-save-button,
+.resource-cancel-button {
+  padding: 11px 18px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.resource-save-button {
+  border: 1px solid #43816f;
+
+  background: #43816f;
+  color: #ffffff;
+}
+
+.resource-save-button:hover {
+  background: #356d5d;
+}
+
+.resource-save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.resource-cancel-button {
+  border: 1px solid #d5e2dd;
+
+  background: #ffffff;
+  color: #52645d;
+}
+
+.resource-cancel-button:hover {
+  background: #f5f8f6;
+}
+
+.resource-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 16px;
+}
+
+.resource-list-header h2 {
+  margin: 0;
+
+  font-size: 21px;
+  color: #253630;
+}
+
+.resource-list-header span {
+  font-size: 14px;
+  color: #899590;
+}
+
+.resource-management-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resource-management-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe9e5;
+  border-radius: 12px;
+}
+
+.resource-management-info {
+  min-width: 0;
+}
+
+.resource-management-info h3 {
+  margin: 0 0 7px;
+
+  font-size: 17px;
+  color: #253630;
+}
+
+.resource-management-info p {
+  margin: 0 0 12px;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  color: #697872;
+}
+
+.resource-management-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.resource-management-meta span {
+  padding: 4px 8px;
+
+  border-radius: 5px;
+
+  background: #eef4f1;
+
+  color: #61736c;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.resource-management-actions {
+  display: flex;
+  gap: 8px;
+
+  flex-shrink: 0;
+}
+
+.resource-edit-button,
+.resource-delete-button {
+  padding: 8px 13px;
+
+  border-radius: 7px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.resource-edit-button {
+  border: 1px solid #b9d4ca;
+
+  background: #eef6f2;
+  color: #43816f;
+}
+
+.resource-delete-button {
+  border: 1px solid #e2c8c8;
+
+  background: #fff5f5;
+  color: #a44747;
+}
+
+.resource-management-state {
+  padding: 40px;
+
+  text-align: center;
+
+  color: #697872;
+}
+
+@media (max-width: 750px) {
+  .resource-management-page {
+    padding: 20px;
+  }
+
+  .resource-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-form-field.full {
+    grid-column: auto;
+  }
+
+  .resource-management-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .resource-management-actions {
+    width: 100%;
+  }
+
+  .resource-edit-button,
+  .resource-delete-button {
+    flex: 1;
+  }
+}

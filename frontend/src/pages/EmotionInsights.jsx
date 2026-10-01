@@ -86,6 +86,7 @@ function EmotionInsights() {
   const phq4 = data?.phq4 || {};
   const journal = data?.journal || {};
   const recentActivity = data?.recentActivity || [];
+  const audioEmotion = data?.audioEmotion || {};
 
   return (
     <div className="insights-page">
@@ -142,6 +143,13 @@ function EmotionInsights() {
 
           <p>Reflections you've saved</p>
         </div>
+        <div className="insight-stat-card">
+          <span className="insight-stat-label">VOICE ANALYSES</span>
+
+          <strong>{summary.totalAudioEmotionRecords || 0}</strong>
+
+          <p>Voice emotion recordings analyzed</p>
+        </div>
       </section>
 
       {/* Main grid */}
@@ -193,6 +201,54 @@ function EmotionInsights() {
                 More emotional-granularity entries will help reveal patterns
                 here.
               </p>
+            </div>
+          )}
+        </section>
+
+        {/* Voice emotion */}
+        <section className="insight-card">
+          <div className="insight-card-header">
+            <div>
+              <span className="insight-card-label">VOICE EMOTION</span>
+
+              <h2>Emotions detected in your voice</h2>
+            </div>
+
+            <span className="insight-card-icon">🎙️</span>
+          </div>
+
+          {audioEmotion.frequentEmotions?.length > 0 ? (
+            <div className="emotion-bars">
+              {audioEmotion.frequentEmotions.map((item) => {
+                const maxCount = audioEmotion.frequentEmotions[0]?.count || 1;
+
+                const percentage = (item.count / maxCount) * 100;
+
+                return (
+                  <div className="emotion-bar-row" key={item.emotion}>
+                    <div className="emotion-bar-info">
+                      <span>{formatEmotion(item.emotion)}</span>
+
+                      <strong>{item.count}</strong>
+                    </div>
+
+                    <div className="emotion-bar-track">
+                      <div
+                        className="emotion-bar-fill"
+                        style={{
+                          width: `${percentage}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="insight-empty">
+              <span>🎙️</span>
+
+              <p>Record your voice to start seeing emotion patterns here.</p>
             </div>
           )}
         </section>
@@ -345,6 +401,12 @@ function EmotionInsights() {
                       ? formatEmotion(activity.emotion)
                       : "Recorded"}
                   </span>
+
+                  {activity.type === "audio_emotion" && (
+                    <small>
+                      Voice confidence: {Math.round(activity.confidence * 100)}%
+                    </small>
+                  )}
                 </div>
 
                 <div className="activity-meta">
