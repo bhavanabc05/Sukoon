@@ -20,12 +20,20 @@ const textEmotionRecordSchema = new mongoose.Schema(
       trim: true,
     },
 
+    language: {
+      type: String,
+      default: "unknown",
+      trim: true,
+    },
+
+    // Final emotion selected after the complete pipeline
     emotion: {
       type: String,
       required: true,
       trim: true,
     },
 
+    // Final confidence associated with the selected emotion
     confidence: {
       type: Number,
       required: true,
@@ -33,6 +41,46 @@ const textEmotionRecordSchema = new mongoose.Schema(
       max: 1,
     },
 
+    // Original ML model result
+    mlEmotion: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    mlConfidence: {
+      type: Number,
+      default: null,
+      min: 0,
+      max: 1,
+    },
+
+    // Groq LLM refinement result
+    llmEmotion: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    llmConfidence: {
+      type: Number,
+      default: null,
+      min: 0,
+      max: 1,
+    },
+
+    llmReason: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    llmUsed: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Original ML probability distribution
     probabilities: {
       type: Map,
       of: Number,

@@ -4,6 +4,33 @@ import "./TextEmotion.css";
 
 const TEXT_EMOTION_API = "http://127.0.0.1:8000";
 
+function formatLanguage(language) {
+  const languages = {
+    en: "English",
+    hi: "Hindi",
+    ta: "Tamil",
+    te: "Telugu",
+    kn: "Kannada",
+    ml: "Malayalam",
+    bn: "Bengali",
+    mr: "Marathi",
+    gu: "Gujarati",
+    pa: "Punjabi",
+    ur: "Urdu",
+  };
+
+  return languages[language] || (language ? language.toUpperCase() : "Unknown");
+}
+
+function formatEmotion(emotion) {
+  if (!emotion) return "—";
+
+  return emotion
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function TextEmotion() {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
@@ -22,11 +49,17 @@ function TextEmotion() {
       setError("");
       setResult(null);
 
+      // --------------------------------------------
+      // 1. Analyze using Python ML + Groq API
+      // --------------------------------------------
+
       const response = await fetch(`${TEXT_EMOTION_API}/predict-emotion`, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           text: text.trim(),
         }),
@@ -38,14 +71,41 @@ function TextEmotion() {
 
       const data = await response.json();
 
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // --------------------------------------------
+      // 2. Save complete analysis to Node backend
+      // --------------------------------------------
+
       const saveResponse = await apiFetch("/api/text-emotions", {
         method: "POST",
+
         body: JSON.stringify({
           text: data.text,
+
           cleanedText: data.cleaned_text,
+
+          language: data.language,
+
           emotion: data.emotion,
+
           confidence: data.confidence,
+
           probabilities: data.probabilities,
+
+          mlEmotion: data.ml_emotion,
+
+          mlConfidence: data.ml_confidence,
+
+          llmEmotion: data.llm_emotion,
+
+          llmConfidence: data.llm_confidence,
+
+          llmReason: data.llm_reason,
+
+          llmUsed: data.llm_used,
         }),
       });
 
@@ -61,12 +121,16 @@ function TextEmotion() {
         );
       }
 
+      // --------------------------------------------
+      // 3. Display result
+      // --------------------------------------------
+
       setResult(data);
     } catch (error) {
       console.error("Text emotion analysis error:", error);
 
       setError(
-        "Unable to connect to the Text Emotion service. Make sure the Text Emotion API is running.",
+        error.message || "Unable to connect to the Text Emotion service.",
       );
     } finally {
       setLoading(false);
@@ -76,6 +140,7 @@ function TextEmotion() {
   return (
     <div className="text-emotion-page">
       {/* Header */}
+
       <section className="text-emotion-header">
         <div>
           <p className="text-emotion-eyebrow">UNDERSTAND</p>
@@ -90,6 +155,7 @@ function TextEmotion() {
       </section>
 
       {/* Input */}
+
       <section className="text-emotion-card">
         <div className="card-heading">
           <div>
@@ -133,6 +199,7 @@ function TextEmotion() {
       </section>
 
       {/* Result */}
+
       {result && (
         <section className="text-emotion-result">
           <div className="result-header">
@@ -143,13 +210,15 @@ function TextEmotion() {
             </div>
           </div>
 
+          {/* Final emotion */}
+
           <div className="detected-emotion-card">
             <div className="detected-emotion-icon">💭</div>
 
             <div>
-              <p className="result-label">DETECTED EMOTION</p>
+              <p className="result-label">FINAL DETECTED EMOTION</p>
 
-              <h3>{result.emotion}</h3>
+              <h3>{formatEmotion(result.emotion)}</h3>
 
               <p className="confidence-text">
                 Confidence:{" "}
@@ -158,22 +227,94 @@ function TextEmotion() {
             </div>
           </div>
 
+          {/* Analysis metadata */}
+
+          <div className="text-analysis-meta">
+            <div>
+              <span>LANGUAGE</span>
+
+              <strong>{formatLanguage(result.language)}</strong>
+            </div>
+
+            <div>
+              <span>ANALYSIS</span>
+
+              <strong>{result.llm_used ? "ML + Groq LLM" : "ML Model"}</strong>
+            </div>
+          </div>
+
+          {/* LLM refinement */}
+
+          {result.llm_used && result.llm_reason && (
+            <div className="llm-refinement-card">
+              <div className="llm-refinement-icon">✨</div>
+
+              <div>
+                <p className="result-label">CONTEXTUAL REFINEMENT</p>
+
+                <h3>Sukoon considered the context</h3>
+
+                <p>{result.llm_reason}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Model comparison */}
+
+          {result.llm_used && (
+            <div className="model-comparison-section">
+              <div className="probabilities-heading">
+                <div>
+                  <h3>How the result was refined</h3>
+
+                  <p>
+                    The trained ML model first generated an emotion prediction.
+                    Groq then considered the full context before producing the
+                    final result.
+                  </p>
+                </div>
+              </div>
+
+              <div className="model-comparison-grid">
+                <div className="model-result-card">
+                  <span className="model-result-label">INITIAL ML MODEL</span>
+
+                  <strong>{formatEmotion(result.ml_emotion)}</strong>
+
+                  <p>Confidence: {(result.ml_confidence * 100).toFixed(2)}%</p>
+                </div>
+
+                <div className="model-result-arrow">→</div>
+
+                <div className="model-result-card llm-result-card">
+                  <span className="model-result-label">GROQ REFINEMENT</span>
+
+                  <strong>{formatEmotion(result.llm_emotion)}</strong>
+
+                  <p>Confidence: {(result.llm_confidence * 100).toFixed(2)}%</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Submitted text */}
+
           <div className="submitted-text">
             <p className="result-label">YOUR TEXT</p>
 
             <p>"{result.text}"</p>
           </div>
 
-          {/* Probabilities */}
+          {/* ML probabilities */}
+
           <div className="probabilities-section">
             <div className="probabilities-heading">
               <div>
-                <h3>Emotion Distribution</h3>
+                <h3>ML Emotion Distribution</h3>
 
                 <p>
-                  How the model distributed probability across the available
-                  emotions.
+                  Probability distribution produced by the trained emotion model
+                  before contextual refinement.
                 </p>
               </div>
             </div>
@@ -187,7 +328,7 @@ function TextEmotion() {
                   return (
                     <div className="probability-item" key={emotion}>
                       <div className="probability-top">
-                        <span>{emotion}</span>
+                        <span>{formatEmotion(emotion)}</span>
 
                         <strong>{percentage.toFixed(2)}%</strong>
                       </div>

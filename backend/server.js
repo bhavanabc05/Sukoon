@@ -2485,9 +2485,16 @@ app.post("/api/text-emotions",
       const {
         text,
         cleanedText,
+        language,
         emotion,
         confidence,
         probabilities,
+        mlEmotion,
+        mlConfidence,
+        llmEmotion,
+        llmConfidence,
+        llmReason,
+        llmUsed,
       } = req.body;
 
       if (!text || !text.trim()) {
@@ -2498,30 +2505,75 @@ app.post("/api/text-emotions",
 
       if (!emotion) {
         return res.status(400).json({
-          message: "Emotion is required",
+          message: "Final emotion is required",
+        });
+      }
+
+      const finalConfidence = Number(confidence);
+
+      if (
+        Number.isNaN(finalConfidence) ||
+        finalConfidence < 0 ||
+        finalConfidence > 1
+      ) {
+        return res.status(400).json({
+          message: "Valid final confidence is required",
         });
       }
 
       const record = new TextEmotionRecord({
         userId: req.user.userId,
+
         text: text.trim(),
+
         cleanedText: cleanedText || "",
-        emotion,
-        confidence: Number(confidence),
+
+        language: language || "unknown",
+
+        emotion: emotion.trim(),
+
+        confidence: finalConfidence,
+
+        mlEmotion: mlEmotion || "",
+
+        mlConfidence:
+          mlConfidence !== null &&
+          mlConfidence !== undefined
+            ? Number(mlConfidence)
+            : null,
+
+        llmEmotion: llmEmotion || "",
+
+        llmConfidence:
+          llmConfidence !== null &&
+          llmConfidence !== undefined
+            ? Number(llmConfidence)
+            : null,
+
+        llmReason: llmReason || "",
+
+        llmUsed: Boolean(llmUsed),
+
         probabilities: probabilities || {},
       });
 
       await record.save();
 
       res.status(201).json({
-        message: "Text emotion result saved successfully",
+        message:
+          "Text emotion result saved successfully",
+
         record,
       });
     } catch (error) {
-      console.error("Text emotion save error:", error);
+      console.error(
+        "Text emotion save error:",
+        error
+      );
 
       res.status(500).json({
-        message: "Error saving text emotion result",
+        message:
+          "Error saving text emotion result",
       });
     }
   }
