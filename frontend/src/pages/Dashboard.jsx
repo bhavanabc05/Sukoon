@@ -92,6 +92,15 @@ function formatReminderSchedule(reminder) {
   return "Scheduled";
 }
 
+function formatEmotion(emotion) {
+  if (!emotion) return "—";
+
+  return emotion
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function getActivityDetails(activity) {
   switch (activity.type) {
     case "mood":
@@ -99,9 +108,9 @@ function getActivityDetails(activity) {
         icon: "😊",
         title: activity.label || "Mood Check-in",
         detail: activity.emotion
-          ? `Mood: ${activity.emotion} · Intensity: ${
-              activity.intensity ?? "—"
-            }/10`
+          ? `Mood: ${formatEmotion(
+              activity.emotion,
+            )} · Intensity: ${activity.intensity ?? "—"}/10`
           : "Mood recorded",
       };
 
@@ -110,9 +119,9 @@ function getActivityDetails(activity) {
         icon: "🎨",
         title: activity.label || "Emotional Granularity",
         detail: activity.emotion
-          ? `Emotion: ${activity.emotion} · Intensity: ${
-              activity.intensity ?? "—"
-            }/10`
+          ? `Emotion: ${formatEmotion(
+              activity.emotion,
+            )} · Intensity: ${activity.intensity ?? "—"}/10`
           : "Emotion identified",
       };
 
@@ -132,7 +141,9 @@ function getActivityDetails(activity) {
         title: activity.label || "Shift Check-in",
         detail:
           [
-            activity.emotion ? `Mood: ${activity.emotion}` : null,
+            activity.emotion
+              ? `Mood: ${formatEmotion(activity.emotion)}`
+              : null,
             activity.stressLevel !== undefined
               ? `Stress: ${activity.stressLevel}/10`
               : null,
@@ -147,7 +158,9 @@ function getActivityDetails(activity) {
         title: activity.label || "Post-Shift Decompression",
         detail:
           [
-            activity.emotion ? `Mood: ${activity.emotion}` : null,
+            activity.emotion
+              ? `Mood: ${formatEmotion(activity.emotion)}`
+              : null,
             activity.stressLevel !== undefined
               ? `Stress: ${activity.stressLevel}/10`
               : null,
@@ -161,12 +174,64 @@ function getActivityDetails(activity) {
         icon: "📔",
         title: activity.label || "Journal",
         detail: activity.emotion
-          ? `Emotion: ${activity.emotion}${
+          ? `Emotion: ${formatEmotion(activity.emotion)}${
               activity.intensity !== undefined
                 ? ` · Intensity: ${activity.intensity}/10`
                 : ""
             }`
           : "Journal entry added",
+      };
+
+    case "text_emotion":
+      return {
+        icon: "💬",
+        title: activity.label || "Text Emotion",
+        detail: activity.emotion
+          ? `${formatEmotion(activity.emotion)} detected from text`
+          : "Text emotion analyzed",
+      };
+
+    case "audio_emotion":
+      return {
+        icon: "🎙️",
+        title: activity.label || "Voice Emotion",
+        detail: activity.emotion
+          ? `${formatEmotion(activity.emotion)} detected from voice`
+          : "Voice emotion analyzed",
+      };
+
+    case "video_emotion":
+      return {
+        icon: "🎥",
+        title: activity.label || "Video Emotion",
+        detail: activity.emotion
+          ? `${formatEmotion(activity.emotion)} detected from video`
+          : "Video emotion analyzed",
+      };
+
+    case "guided_reflection":
+      return {
+        icon: "🧘",
+        title: activity.label || "Guided Reflection",
+        detail: activity.emotion
+          ? `${formatEmotion(activity.emotion)} recorded during reflection`
+          : "Guided reflection completed",
+      };
+
+    case "phq4":
+      return {
+        icon: "📋",
+        title: activity.label || "PHQ-4 Assessment",
+        detail: "PHQ-4 assessment completed",
+      };
+
+    case "challenge":
+      return {
+        icon: "🏆",
+        title: activity.label || "Challenge Activity",
+        detail: activity.day
+          ? `Day ${activity.day} completed`
+          : "Challenge task completed",
       };
 
     default:
@@ -176,6 +241,130 @@ function getActivityDetails(activity) {
         detail: "Wellbeing activity recorded",
       };
   }
+}
+
+function DashboardTrend({ data = [] }) {
+  if (!data.length) {
+    return (
+      <div className="dashboard-trend-empty">
+        <span>📈</span>
+        <p>Record more wellbeing activities to see your emotional trend.</p>
+      </div>
+    );
+  }
+
+  const width = 760;
+  const height = 240;
+
+  const padding = {
+    top: 20,
+    right: 20,
+    bottom: 42,
+    left: 42,
+  };
+
+  const chartWidth = width - padding.left - padding.right;
+
+  const chartHeight = height - padding.top - padding.bottom;
+
+  const values = data.map((item) => Number(item.averageIntensity) || 0);
+
+  const maxValue = Math.max(...values, 10);
+
+  const getX = (index) => {
+    if (data.length === 1) {
+      return padding.left + chartWidth / 2;
+    }
+
+    return padding.left + (index / (data.length - 1)) * chartWidth;
+  };
+
+  const getY = (value) => {
+    return padding.top + chartHeight - (value / maxValue) * chartHeight;
+  };
+
+  const points = data
+    .map(
+      (item, index) =>
+        `${getX(index)},${getY(Number(item.averageIntensity) || 0)}`,
+    )
+    .join(" ");
+
+  const labelIndexes =
+    data.length <= 5
+      ? data.map((_, index) => index)
+      : [0, Math.floor(data.length / 2), data.length - 1];
+
+  return (
+    <div className="dashboard-trend-chart">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="dashboard-trend-svg"
+        role="img"
+        aria-label="Emotional intensity trend"
+      >
+        {[0, 2.5, 5, 7.5, 10].map((value) => {
+          const y = getY(value);
+
+          return (
+            <g key={value}>
+              <line
+                x1={padding.left}
+                x2={width - padding.right}
+                y1={y}
+                y2={y}
+                className="dashboard-chart-grid"
+              />
+
+              <text
+                x={padding.left - 9}
+                y={y + 4}
+                textAnchor="end"
+                className="dashboard-chart-label"
+              >
+                {value}
+              </text>
+            </g>
+          );
+        })}
+
+        <polyline
+          points={points}
+          fill="none"
+          className="dashboard-trend-line"
+        />
+
+        {data.map((item, index) => (
+          <circle
+            key={`${item.date}-${index}`}
+            cx={getX(index)}
+            cy={getY(Number(item.averageIntensity) || 0)}
+            r="4"
+            className="dashboard-trend-point"
+          />
+        ))}
+
+        {labelIndexes.map((index) => {
+          const item = data[index];
+
+          return (
+            <text
+              key={`${item.date}-label`}
+              x={getX(index)}
+              y={height - 12}
+              textAnchor="middle"
+              className="dashboard-chart-label"
+            >
+              {new Date(`${item.date}T00:00:00`).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
+            </text>
+          );
+        })}
+      </svg>
+    </div>
+  );
 }
 
 function Dashboard() {
@@ -203,6 +392,7 @@ function Dashboard() {
       }
 
       const insightsData = await insightsResponse.json();
+
       const remindersData = await remindersResponse.json();
 
       if (!insightsResponse.ok) {
@@ -245,12 +435,12 @@ function Dashboard() {
   const mood = insights?.mood || {};
   const emotions = insights?.emotions || {};
   const stress = insights?.stress || {};
+  const trends = insights?.trends || {};
   const recentActivity = insights?.recentActivity || [];
 
   const topEmotions = emotions.frequentSpecificEmotions?.slice(0, 3) || [];
 
-  const latestActivity = recentActivity.slice(0, 5);
-  const totalActivity = recentActivity.length;
+  const latestActivity = recentActivity.slice(0, 6);
 
   return (
     <div className="dashboard">
@@ -274,8 +464,8 @@ function Dashboard() {
               <span>→</span>
             </Link>
 
-            <Link to="/text-emotion" className="hero-secondary-button">
-              Explore your emotions
+            <Link to="/emotion-insights" className="hero-secondary-button">
+              View your insights
             </Link>
           </div>
         </div>
@@ -302,7 +492,9 @@ function Dashboard() {
         <div className="section-heading">
           <div>
             <p className="section-eyebrow">START HERE</p>
+
             <h2>What would help right now?</h2>
+
             <p>Choose a small step that feels right for you.</p>
           </div>
         </div>
@@ -313,7 +505,9 @@ function Dashboard() {
 
             <div className="quick-action-content">
               <span className="action-label">CHECK IN</span>
+
               <h3>Mood Check-in</h3>
+
               <p>Notice how you're feeling right now.</p>
             </div>
 
@@ -324,33 +518,39 @@ function Dashboard() {
             <div className="quick-action-icon text-emotion-icon">💭</div>
 
             <div className="quick-action-content">
-              <span className="action-label">UNDERSTAND</span>
+              <span className="action-label">TEXT</span>
+
               <h3>Text Emotion</h3>
-              <p>Put your thoughts into words and explore the emotion.</p>
+
+              <p>Explore the emotion expressed through your words.</p>
             </div>
 
             <span className="card-arrow">→</span>
           </Link>
 
-          <Link to="/journal" className="quick-action-card">
-            <div className="quick-action-icon journal-icon">📔</div>
+          <Link to="/audio-emotion" className="quick-action-card">
+            <div className="quick-action-icon audio-emotion-icon">🎙️</div>
 
             <div className="quick-action-content">
-              <span className="action-label">REFLECT</span>
-              <h3>Journal</h3>
-              <p>Create a private space for your thoughts.</p>
+              <span className="action-label">VOICE</span>
+
+              <h3>Audio Emotion</h3>
+
+              <p>Explore emotional signals detected in your voice.</p>
             </div>
 
             <span className="card-arrow">→</span>
           </Link>
 
-          <Link to="/interventions" className="quick-action-card">
-            <div className="quick-action-icon intervention-icon">🧘</div>
+          <Link to="/video-emotion" className="quick-action-card">
+            <div className="quick-action-icon video-emotion-icon">🎥</div>
 
             <div className="quick-action-content">
-              <span className="action-label">RESET</span>
-              <h3>Interventions</h3>
-              <p>Try a simple wellbeing activity.</p>
+              <span className="action-label">VIDEO</span>
+
+              <h3>Video Emotion</h3>
+
+              <p>Explore facial emotion patterns from video.</p>
             </div>
 
             <span className="card-arrow">→</span>
@@ -363,7 +563,9 @@ function Dashboard() {
         <div className="section-heading">
           <div>
             <p className="section-eyebrow">YOUR WELLBEING</p>
+
             <h2>A quick snapshot</h2>
+
             <p>Based on your recent activity with Sukoon.</p>
           </div>
 
@@ -373,16 +575,18 @@ function Dashboard() {
         </div>
 
         <div className="overview-grid">
-          {/* MOOD */}
           <div className="overview-card mood-card">
             <div className="overview-card-top">
               <span className="overview-icon">😊</span>
+
               <span className="overview-label">RECENT MOOD</span>
             </div>
 
             {mood.mostFrequent ? (
               <>
-                <h3 className="overview-value">{mood.mostFrequent}</h3>
+                <h3 className="overview-value">
+                  {formatEmotion(mood.mostFrequent)}
+                </h3>
 
                 {mood.averageIntensity !== null &&
                   mood.averageIntensity !== undefined && (
@@ -398,15 +602,16 @@ function Dashboard() {
             ) : (
               <>
                 <h3 className="overview-value muted-value">No check-in yet</h3>
+
                 <p>Your first check-in will appear here.</p>
               </>
             )}
           </div>
 
-          {/* STRESS */}
           <div className="overview-card stress-card">
             <div className="overview-card-top">
               <span className="overview-icon">🧍</span>
+
               <span className="overview-label">BODY STRESS</span>
             </div>
 
@@ -423,27 +628,28 @@ function Dashboard() {
             ) : (
               <>
                 <h3 className="overview-value muted-value">No data yet</h3>
+
                 <p>Complete a Somatic Stress Map to begin.</p>
               </>
             )}
           </div>
 
-          {/* ACTIVITY */}
           <div className="overview-card activity-card">
             <div className="overview-card-top">
               <span className="overview-icon">✨</span>
-              <span className="overview-label">ACTIVITY</span>
+
+              <span className="overview-label">TOTAL ACTIVITY</span>
             </div>
 
-            <h3 className="overview-value">{totalActivity}</h3>
+            <h3 className="overview-value">{summary.totalActivities || 0}</h3>
 
-            <p>Recent wellbeing interactions</p>
+            <p>Recorded wellbeing activities</p>
           </div>
 
-          {/* EMOTIONS */}
           <div className="overview-card emotion-card">
             <div className="overview-card-top">
               <span className="overview-icon">🎨</span>
+
               <span className="overview-label">EMOTIONAL AWARENESS</span>
             </div>
 
@@ -454,7 +660,7 @@ function Dashboard() {
                     className="snapshot-emotion"
                     key={`${item.emotion}-${index}`}
                   >
-                    {item.emotion}
+                    {formatEmotion(item.emotion)}
                   </span>
                 ))}
               </div>
@@ -462,30 +668,129 @@ function Dashboard() {
               <h3 className="overview-value muted-value">Getting started</h3>
             )}
 
-            <p>Your frequently identified emotions</p>
+            <p>Frequently identified emotions</p>
           </div>
         </div>
       </section>
 
-      {/* TEXT EMOTION FEATURE */}
-      <section className="text-emotion-banner">
-        <div className="text-emotion-banner-icon">💭</div>
+      {/* EMOTIONAL TREND */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <div>
+            <p className="section-eyebrow">YOUR PATTERNS</p>
 
-        <div className="text-emotion-banner-content">
-          <p className="section-eyebrow">EXPLORE YOUR WORDS</p>
+            <h2>Emotional trend</h2>
 
-          <h2>What might your words be expressing?</h2>
+            <p>
+              A compact view of how recorded emotional intensity has changed
+              over time.
+            </p>
+          </div>
 
-          <p>
-            Write a few lines about how you're feeling and explore the emotion
-            expressed through your words.
-          </p>
+          <Link to="/emotion-insights" className="view-all">
+            View full insights →
+          </Link>
         </div>
 
-        <Link to="/text-emotion" className="text-emotion-banner-button">
-          Analyze emotion
-          <span>→</span>
-        </Link>
+        <div className="dashboard-trend-card">
+          <DashboardTrend data={trends.emotionalIntensity} />
+
+          <div className="dashboard-trend-footer">
+            <span>
+              Average intensity is based only on activities where an actual
+              intensity was recorded.
+            </span>
+
+            <Link to="/emotion-insights">Explore patterns →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ALL WELLBEING TOOLS */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <div>
+            <p className="section-eyebrow">WELLBEING TOOLS</p>
+
+            <h2>Explore Sukoon</h2>
+
+            <p>All your wellbeing tools are available directly from here.</p>
+          </div>
+        </div>
+
+        <div className="dashboard-tools-grid">
+          <Link to="/shift-checkin" className="dashboard-tool-card">
+            <span>⏰</span>
+            <div>
+              <strong>Shift Check-in</strong>
+              <small>Check in around your work shift</small>
+            </div>
+          </Link>
+
+          <Link to="/emotional-granularity" className="dashboard-tool-card">
+            <span>🎨</span>
+            <div>
+              <strong>Emotional Granularity</strong>
+              <small>Understand emotions more precisely</small>
+            </div>
+          </Link>
+
+          <Link to="/somatic-stress" className="dashboard-tool-card">
+            <span>🧍</span>
+            <div>
+              <strong>Somatic Stress</strong>
+              <small>Notice stress through body signals</small>
+            </div>
+          </Link>
+
+          <Link to="/post-shift-decompression" className="dashboard-tool-card">
+            <span>🌙</span>
+            <div>
+              <strong>Post-Shift Decompression</strong>
+              <small>Create space to recover after work</small>
+            </div>
+          </Link>
+
+          <Link to="/journal" className="dashboard-tool-card">
+            <span>📔</span>
+            <div>
+              <strong>Journal</strong>
+              <small>Reflect privately on your day</small>
+            </div>
+          </Link>
+
+          <Link to="/phq4" className="dashboard-tool-card">
+            <span>📋</span>
+            <div>
+              <strong>PHQ-4</strong>
+              <small>Complete a brief wellbeing screening</small>
+            </div>
+          </Link>
+
+          <Link to="/sukoon-chat" className="dashboard-tool-card">
+            <span>🧘</span>
+            <div>
+              <strong>Sukoon Chat</strong>
+              <small>Reflect with structured prompts</small>
+            </div>
+          </Link>
+
+          <Link to="/reminders" className="dashboard-tool-card">
+            <span>🔔</span>
+            <div>
+              <strong>Reminders</strong>
+              <small>Build gentle wellbeing routines</small>
+            </div>
+          </Link>
+
+          <Link to="/interventions" className="dashboard-tool-card">
+            <span>🌿</span>
+            <div>
+              <strong>Interventions</strong>
+              <small>Try a guided wellbeing activity</small>
+            </div>
+          </Link>
+        </div>
       </section>
 
       {/* RECENT EMOTIONS */}
@@ -493,7 +798,9 @@ function Dashboard() {
         <div className="section-heading">
           <div>
             <p className="section-eyebrow">UNDERSTAND</p>
+
             <h2>Recent Emotions</h2>
+
             <p>Emotions you've identified through Sukoon.</p>
           </div>
 
@@ -506,7 +813,8 @@ function Dashboard() {
           <div className="emotion-tags">
             {topEmotions.map((item, index) => (
               <div className="emotion-tag" key={`${item.emotion}-${index}`}>
-                <span>{item.emotion}</span>
+                <span>{formatEmotion(item.emotion)}</span>
+
                 <strong>
                   {item.count} {item.count === 1 ? "record" : "records"}
                 </strong>
@@ -536,7 +844,9 @@ function Dashboard() {
         <div className="section-heading">
           <div>
             <p className="section-eyebrow">PERSONALIZE</p>
+
             <h2>Today's Routine</h2>
+
             <p>Your active wellbeing reminders.</p>
           </div>
 
@@ -566,6 +876,7 @@ function Dashboard() {
 
                   <div className="routine-info">
                     <h3>{reminder.title}</h3>
+
                     <p>{formatReminderSchedule(reminder)}</p>
                   </div>
 
@@ -597,9 +908,15 @@ function Dashboard() {
         <div className="section-heading">
           <div>
             <p className="section-eyebrow">YOUR JOURNEY</p>
+
             <h2>Recent Activity</h2>
+
             <p>Your latest interactions with Sukoon.</p>
           </div>
+
+          <Link to="/emotion-insights" className="view-all">
+            View all insights →
+          </Link>
         </div>
 
         {latestActivity.length > 0 ? (
@@ -610,12 +927,16 @@ function Dashboard() {
               return (
                 <div
                   className="activity-item"
-                  key={activity._id || `${activity.type}-${index}`}
+                  key={
+                    activity._id ||
+                    `${activity.type}-${activity.timestamp}-${index}`
+                  }
                 >
                   <div className="activity-icon">{details.icon}</div>
 
                   <div className="activity-content">
                     <h3>{details.title}</h3>
+
                     <p>{details.detail}</p>
                   </div>
 
@@ -646,48 +967,86 @@ function Dashboard() {
         )}
       </section>
 
-      {/* SUPPORT */}
-      <section className="support-section">
-        <div className="support-content">
-          <p className="section-eyebrow">SUPPORT</p>
+      {/* SUPPORT & COMMUNITY */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <div>
+            <p className="section-eyebrow">CONNECT & SUPPORT</p>
 
-          <h2>Need a little support?</h2>
+            <h2>You're not alone</h2>
 
-          <p>Explore tools, resources, or conversation when you need them.</p>
+            <p>
+              Explore conversation, resources, professional support, and
+              community.
+            </p>
+          </div>
         </div>
 
-        <div className="support-actions">
-          <Link to="/chatbot" className="support-link">
-            <span className="support-link-icon">💬</span>
+        <div className="dashboard-support-grid">
+          <Link to="/sukoon-chat" className="dashboard-support-card">
+            <span>💬</span>
 
             <div>
               <strong>Sukoon Chat</strong>
-              <small>Talk it through</small>
+              <small>Talk through what's on your mind</small>
             </div>
 
-            <span className="support-arrow">→</span>
+            <b>→</b>
           </Link>
 
-          <Link to="/resource-hub" className="support-link">
-            <span className="support-link-icon">📚</span>
+          <Link to="/resource-hub" className="dashboard-support-card">
+            <span>📚</span>
 
             <div>
               <strong>Resource Hub</strong>
-              <small>Explore resources</small>
+              <small>Explore wellbeing resources</small>
             </div>
 
-            <span className="support-arrow">→</span>
+            <b>→</b>
           </Link>
 
-          <Link to="/professional-support" className="support-link">
-            <span className="support-link-icon">👩‍⚕️</span>
+          <Link to="/professional-support" className="dashboard-support-card">
+            <span>👩‍⚕️</span>
 
             <div>
               <strong>Professional Support</strong>
               <small>Find support options</small>
             </div>
 
-            <span className="support-arrow">→</span>
+            <b>→</b>
+          </Link>
+
+          <Link to="/community" className="dashboard-support-card">
+            <span>🤝</span>
+
+            <div>
+              <strong>Community</strong>
+              <small>Connect through shared experiences</small>
+            </div>
+
+            <b>→</b>
+          </Link>
+
+          <Link to="/challenges" className="dashboard-support-card">
+            <span>🏆</span>
+
+            <div>
+              <strong>Challenges</strong>
+              <small>Build wellbeing habits together</small>
+            </div>
+
+            <b>→</b>
+          </Link>
+
+          <Link to="/profile" className="dashboard-support-card">
+            <span>👤</span>
+
+            <div>
+              <strong>Profile</strong>
+              <small>Manage your Sukoon profile</small>
+            </div>
+
+            <b>→</b>
           </Link>
         </div>
       </section>

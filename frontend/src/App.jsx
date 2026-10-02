@@ -97,14 +97,6 @@ function App() {
               ⏱️ Reminders
             </NavLink>
 
-            <NavLink to="/interventions" className="nav-item">
-              🧘 Interventions
-            </NavLink>
-
-            <NavLink to="/post-shift-decompression" className="nav-item">
-              🛌 Post-Shift Decompression
-            </NavLink>
-
             <p className="nav-heading">SUPPORT</p>
 
             <NavLink to="/sukoon-chat" className="nav-item">
@@ -331,8 +323,7 @@ function App() {
               }
             />
             <Route
-              path="/resources
-              /:resourceId"
+              path="/resources/:resourceId"
               element={
                 <ProtectedRoute>
                   <ResourceDetails />

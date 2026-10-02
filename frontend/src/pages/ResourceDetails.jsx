@@ -68,7 +68,7 @@ function ResourceDetails() {
     <div className="resource-details-page">
       <button
         className="resource-back-button"
-        onClick={() => navigate("/resources")}
+        onClick={() => navigate("/resource-hub")}
       >
         ← Back to Resource Hub
       </button>

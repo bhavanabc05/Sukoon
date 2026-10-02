@@ -1344,7 +1344,31 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
+    // --------------------------------------------------
+    // DATE RANGE FOR TREND DATA
+    // --------------------------------------------------
+
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+    // --------------------------------------------------
+    // FETCH TOTAL COUNTS + RECENT RECORDS
+    // --------------------------------------------------
+
     const [
+      totalMoodCheckins,
+      totalEmotionalGranularityRecords,
+      totalSomaticStressRecords,
+      totalShiftCheckins,
+      totalPostShiftDecompressions,
+      totalJournalEntries,
+      totalTextEmotionRecords,
+      totalAudioEmotionRecords,
+      totalVideoEmotionRecords,
+      totalPHQ4Assessments,
+      totalGuidedReflections,
+      totalChallengeActivities,
+
       moods,
       emotionalGranularity,
       somaticStress,
@@ -1352,47 +1376,98 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
       shiftCheckins,
       postShiftDecompressions,
       journalEntries,
+      textEmotionRecords,
       audioEmotionRecords,
+      videoEmotionRecords,
+      guidedReflections,
+      challengeActivities,
     ] = await Promise.all([
+      // ---------------- TOTAL COUNTS ----------------
+
+      MoodRecord.countDocuments({ userId }),
+
+      EmotionalGranularity.countDocuments({ userId }),
+
+      SomaticStressRecord.countDocuments({ userId }),
+
+      ShiftCheckin.countDocuments({ userId }),
+
+      PostShiftDecompression.countDocuments({ userId }),
+
+      JournalEntry.countDocuments({ userId }),
+
+      TextEmotionRecord.countDocuments({ userId }),
+
+      AudioEmotionRecord.countDocuments({ userId }),
+
+      VideoEmotionRecord.countDocuments({ userId }),
+
+      PHQ4Assessment.countDocuments({ userId }),
+
+      GuidedReflection.countDocuments({ userId }),
+
+      ChallengeActivity.countDocuments({ userId }),
+
+      // ---------------- RECENT DATA ----------------
+
       MoodRecord.find({ userId })
         .sort({ timestamp: -1 })
-        .limit(30),
+        .limit(90),
 
       EmotionalGranularity.find({ userId })
         .sort({ timestamp: -1 })
-        .limit(30),
+        .limit(90),
 
       SomaticStressRecord.find({ userId })
         .sort({ timestamp: -1 })
-        .limit(30),
+        .limit(90),
 
       PHQ4Assessment.find({ userId })
         .sort({ completedAt: -1 })
-        .limit(10),
+        .limit(20),
 
       ShiftCheckin.find({ userId })
         .sort({ checkInTime: -1 })
-        .limit(30),
+        .limit(90),
 
       PostShiftDecompression.find({ userId })
         .sort({ createdAt: -1 })
-        .limit(30),
+        .limit(90),
 
       JournalEntry.find({ userId })
         .sort({ createdAt: -1 })
-        .limit(30),
+        .limit(90),
+
+      TextEmotionRecord.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(90),
 
       AudioEmotionRecord.find({ userId })
         .sort({ createdAt: -1 })
-        .limit(30),
+        .limit(90),
+
+      VideoEmotionRecord.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(90),
+
+      GuidedReflection.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(90),
+
+      ChallengeActivity.find({ userId })
+        .sort({ completedAt: -1 })
+        .limit(90)
+        .populate("challengeId", "title"),
     ]);
 
-    // -------------------- MOOD SUMMARY --------------------
+    // --------------------------------------------------
+    // MOOD SUMMARY
+    // --------------------------------------------------
 
     const moodCount = {};
 
     moods.forEach((record) => {
-      const mood = record.mood?.toLowerCase();
+      const mood = record.mood?.trim()?.toLowerCase();
 
       if (mood) {
         moodCount[mood] = (moodCount[mood] || 0) + 1;
@@ -1409,14 +1484,16 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
         ? Number(
             (
               moods.reduce(
-                (sum, record) => sum + record.intensity,
+                (sum, record) => sum + (Number(record.intensity) || 0),
                 0
               ) / moods.length
             ).toFixed(1)
           )
         : null;
 
-    // -------------------- EMOTION SUMMARY --------------------
+    // --------------------------------------------------
+    // EMOTIONAL GRANULARITY SUMMARY
+    // --------------------------------------------------
 
     const emotionCount = {};
 
@@ -1437,12 +1514,37 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
         count,
       }));
 
-    // -------------------- AUDIO EMOTION SUMMARY --------------------
+    // --------------------------------------------------
+    // TEXT EMOTION SUMMARY
+    // --------------------------------------------------
+
+    const textEmotionCount = {};
+
+    textEmotionRecords.forEach((record) => {
+      const emotion = record.emotion?.trim()?.toLowerCase();
+
+      if (emotion) {
+        textEmotionCount[emotion] =
+          (textEmotionCount[emotion] || 0) + 1;
+      }
+    });
+
+    const frequentTextEmotions = Object.entries(textEmotionCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([emotion, count]) => ({
+        emotion,
+        count,
+      }));
+
+    // --------------------------------------------------
+    // AUDIO EMOTION SUMMARY
+    // --------------------------------------------------
 
     const audioEmotionCount = {};
 
     audioEmotionRecords.forEach((record) => {
-      const emotion = record.emotion?.trim().toLowerCase();
+      const emotion = record.emotion?.trim()?.toLowerCase();
 
       if (emotion) {
         audioEmotionCount[emotion] =
@@ -1450,24 +1552,48 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
       }
     });
 
-    const frequentAudioEmotions = Object.entries(
-      audioEmotionCount
-    )
+    const frequentAudioEmotions = Object.entries(audioEmotionCount)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 8)
       .map(([emotion, count]) => ({
         emotion,
         count,
       }));
 
-    // -------------------- STRESS SUMMARY --------------------
+    // --------------------------------------------------
+    // VIDEO EMOTION SUMMARY
+    // --------------------------------------------------
+
+    const videoEmotionCount = {};
+
+    videoEmotionRecords.forEach((record) => {
+      const emotion = record.emotion?.trim()?.toLowerCase();
+
+      if (emotion) {
+        videoEmotionCount[emotion] =
+          (videoEmotionCount[emotion] || 0) + 1;
+      }
+    });
+
+    const frequentVideoEmotions = Object.entries(videoEmotionCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([emotion, count]) => ({
+        emotion,
+        count,
+      }));
+
+    // --------------------------------------------------
+    // STRESS SUMMARY
+    // --------------------------------------------------
 
     const averageSomaticStress =
       somaticStress.length > 0
         ? Number(
             (
               somaticStress.reduce(
-                (sum, record) => sum + record.severity,
+                (sum, record) =>
+                  sum + (Number(record.severity) || 0),
                 0
               ) / somaticStress.length
             ).toFixed(1)
@@ -1479,19 +1605,22 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
         ? Number(
             (
               shiftCheckins.reduce(
-                (sum, record) => sum + record.stressLevel,
+                (sum, record) =>
+                  sum + (Number(record.stressLevel) || 0),
                 0
               ) / shiftCheckins.length
             ).toFixed(1)
           )
         : null;
 
-    // -------------------- SHIFT SUMMARY --------------------
+    // --------------------------------------------------
+    // SHIFT SUMMARY
+    // --------------------------------------------------
 
     const shiftMoodCount = {};
 
     shiftCheckins.forEach((record) => {
-      const emotion = record.mood?.emotion?.toLowerCase();
+      const emotion = record.mood?.emotion?.trim()?.toLowerCase();
 
       if (emotion) {
         shiftMoodCount[emotion] =
@@ -1501,25 +1630,20 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
 
     const frequentShiftMoods = Object.entries(shiftMoodCount)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 8)
       .map(([emotion, count]) => ({
         emotion,
         count,
       }));
 
-    // -------------------- PHQ-4 SUMMARY --------------------
-
-    const latestPHQ4 =
-      phq4Assessments.length > 0
-        ? phq4Assessments[0]
-        : null;
-
-    // -------------------- JOURNAL SUMMARY --------------------
+    // --------------------------------------------------
+    // JOURNAL SUMMARY
+    // --------------------------------------------------
 
     const journalEmotionCount = {};
 
     journalEntries.forEach((entry) => {
-      const emotion = entry.emotion?.toLowerCase();
+      const emotion = entry.emotion?.trim()?.toLowerCase();
 
       if (emotion) {
         journalEmotionCount[emotion] =
@@ -1531,87 +1655,443 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
       journalEmotionCount
     )
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 8)
       .map(([emotion, count]) => ({
         emotion,
         count,
       }));
 
-    // -------------------- RECENT ACTIVITY --------------------
+    // --------------------------------------------------
+    // GUIDED REFLECTION SUMMARY
+    // --------------------------------------------------
+
+    const reflectionEmotionCount = {};
+
+    guidedReflections.forEach((record) => {
+      const emotion =
+        record.emotionalState?.specificEmotion
+          ?.trim()
+          ?.toLowerCase();
+
+      if (emotion) {
+        reflectionEmotionCount[emotion] =
+          (reflectionEmotionCount[emotion] || 0) + 1;
+      }
+    });
+
+    const frequentReflectionEmotions = Object.entries(
+      reflectionEmotionCount
+    )
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([emotion, count]) => ({
+        emotion,
+        count,
+      }));
+
+    // --------------------------------------------------
+    // PHQ-4
+    // --------------------------------------------------
+
+    const latestPHQ4 =
+      phq4Assessments.length > 0
+        ? phq4Assessments[0]
+        : null;
+
+    // --------------------------------------------------
+    // DAILY TREND HELPERS
+    // --------------------------------------------------
+
+    const toDayKey = (dateValue) => {
+      if (!dateValue) return null;
+
+      const date = new Date(dateValue);
+
+      if (Number.isNaN(date.getTime())) {
+        return null;
+      }
+
+      return date.toISOString().slice(0, 10);
+    };
+
+    const trendDays = {};
+
+    const ensureTrendDay = (dateValue) => {
+      const day = toDayKey(dateValue);
+
+      if (!day) return null;
+
+      if (!trendDays[day]) {
+        trendDays[day] = {
+          date: day,
+          emotionValues: [],
+          stressValues: [],
+          activityCount: 0,
+        };
+      }
+
+      return trendDays[day];
+    };
+
+    // --------------------------------------------------
+    // EMOTIONAL INTENSITY TREND
+    // --------------------------------------------------
+
+    moods.forEach((record) => {
+      const day = ensureTrendDay(record.timestamp);
+
+      if (day && record.intensity !== undefined) {
+        day.emotionValues.push(Number(record.intensity));
+        day.activityCount += 1;
+      }
+    });
+
+    emotionalGranularity.forEach((record) => {
+      const day = ensureTrendDay(record.timestamp);
+
+      if (day && record.intensity !== undefined) {
+        day.emotionValues.push(Number(record.intensity));
+        day.activityCount += 1;
+      }
+    });
+
+    shiftCheckins.forEach((record) => {
+      const day = ensureTrendDay(record.checkInTime);
+
+      if (day && record.mood?.intensity !== undefined) {
+        day.emotionValues.push(
+          Number(record.mood.intensity)
+        );
+        day.activityCount += 1;
+      }
+    });
+
+    postShiftDecompressions.forEach((record) => {
+      const day = ensureTrendDay(record.createdAt);
+
+      if (
+        day &&
+        record.emotionalState?.intensity !== undefined
+      ) {
+        day.emotionValues.push(
+          Number(record.emotionalState.intensity)
+        );
+        day.activityCount += 1;
+      }
+    });
+
+    journalEntries.forEach((record) => {
+      const day = ensureTrendDay(record.createdAt);
+
+      if (
+        day &&
+        record.emotionIntensity !== undefined &&
+        record.emotionIntensity !== null
+      ) {
+        day.emotionValues.push(
+          Number(record.emotionIntensity)
+        );
+        day.activityCount += 1;
+      }
+    });
+
+    guidedReflections.forEach((record) => {
+      const day = ensureTrendDay(
+        record.completedAt || record.createdAt
+      );
+
+      if (
+        day &&
+        record.emotionalState?.intensity !== undefined
+      ) {
+        day.emotionValues.push(
+          Number(record.emotionalState.intensity)
+        );
+        day.activityCount += 1;
+      }
+    });
+
+    // --------------------------------------------------
+    // STRESS TREND
+    // --------------------------------------------------
+
+    somaticStress.forEach((record) => {
+      const day = ensureTrendDay(record.timestamp);
+
+      if (day && record.severity !== undefined) {
+        day.stressValues.push(Number(record.severity));
+      }
+    });
+
+    shiftCheckins.forEach((record) => {
+      const day = ensureTrendDay(record.checkInTime);
+
+      if (day && record.stressLevel !== undefined) {
+        day.stressValues.push(
+          Number(record.stressLevel)
+        );
+      }
+    });
+
+    postShiftDecompressions.forEach((record) => {
+      const day = ensureTrendDay(record.createdAt);
+
+      if (day && record.stressLevel !== undefined) {
+        day.stressValues.push(
+          Number(record.stressLevel)
+        );
+      }
+    });
+
+    const emotionalIntensityTrend = Object.values(trendDays)
+      .map((day) => ({
+        date: day.date,
+
+        averageIntensity:
+          day.emotionValues.length > 0
+            ? Number(
+                (
+                  day.emotionValues.reduce(
+                    (sum, value) => sum + value,
+                    0
+                  ) / day.emotionValues.length
+                ).toFixed(1)
+              )
+            : null,
+
+        activityCount: day.activityCount,
+      }))
+      .filter((item) => item.averageIntensity !== null)
+      .sort(
+        (a, b) =>
+          new Date(a.date) - new Date(b.date)
+      );
+
+    const stressTrend = Object.values(trendDays)
+      .map((day) => ({
+        date: day.date,
+
+        averageStress:
+          day.stressValues.length > 0
+            ? Number(
+                (
+                  day.stressValues.reduce(
+                    (sum, value) => sum + value,
+                    0
+                  ) / day.stressValues.length
+                ).toFixed(1)
+              )
+            : null,
+      }))
+      .filter((item) => item.averageStress !== null)
+      .sort(
+        (a, b) =>
+          new Date(a.date) - new Date(b.date)
+      );
+
+    // --------------------------------------------------
+    // MODALITY USAGE
+    // --------------------------------------------------
+
+    const modalityUsage = [
+      {
+        modality: "Text",
+        count: totalTextEmotionRecords,
+      },
+      {
+        modality: "Audio",
+        count: totalAudioEmotionRecords,
+      },
+      {
+        modality: "Video",
+        count: totalVideoEmotionRecords,
+      },
+      {
+        modality: "Emotional Granularity",
+        count: totalEmotionalGranularityRecords,
+      },
+    ];
+
+    // --------------------------------------------------
+    // RECENT ACTIVITY
+    // --------------------------------------------------
 
     const recentActivity = [
+      // ---------------- MOOD ----------------
+
       ...moods.map((record) => ({
         type: "mood",
         label: "Mood Check-in",
-        emotion: record.mood,
+        emotion: record.mood || null,
         intensity: record.intensity,
         timestamp: record.timestamp,
       })),
+
+      // ---------------- GRANULARITY ----------------
 
       ...emotionalGranularity.map((record) => ({
         type: "emotional_granularity",
         label: "Emotional Granularity",
-        emotion: record.specificEmotion,
+        emotion: record.specificEmotion || null,
         intensity: record.intensity,
         timestamp: record.timestamp,
       })),
 
+      // ---------------- SOMATIC STRESS ----------------
+
+      ...somaticStress.map((record) => ({
+        type: "somatic_stress",
+        label: "Somatic Stress Map",
+        intensity: record.severity,
+        timestamp: record.timestamp,
+      })),
+
+      // ---------------- SHIFT ----------------
+
       ...shiftCheckins.map((record) => ({
         type: "shift_checkin",
         label: "Shift Check-in",
-        emotion: record.mood?.emotion,
+        emotion: record.mood?.emotion || null,
         intensity: record.mood?.intensity,
         stressLevel: record.stressLevel,
         timestamp: record.checkInTime,
       })),
 
+      // ---------------- POST SHIFT ----------------
+
       ...postShiftDecompressions.map((record) => ({
         type: "post_shift",
         label: "Post-Shift Decompression",
-        emotion: record.emotionalState?.mood,
-        intensity: record.emotionalState?.intensity,
+        emotion:
+          record.emotionalState?.mood || null,
+        intensity:
+          record.emotionalState?.intensity,
         stressLevel: record.stressLevel,
         timestamp: record.createdAt,
       })),
+
+      // ---------------- JOURNAL ----------------
 
       ...journalEntries.map((record) => ({
         type: "journal",
         label: "Journal",
         emotion: record.emotion || null,
-        intensity: record.emotionIntensity || null,
+        intensity:
+          record.emotionIntensity || null,
         timestamp: record.createdAt,
       })),
+
+      // ---------------- TEXT ----------------
+
+      ...textEmotionRecords.map((record) => ({
+        type: "text_emotion",
+        label: "Text Emotion",
+        emotion: record.emotion || null,
+        confidence: record.confidence,
+        timestamp: record.createdAt,
+      })),
+
+      // ---------------- AUDIO ----------------
 
       ...audioEmotionRecords.map((record) => ({
         type: "audio_emotion",
         label: "Voice Emotion",
-        emotion: record.emotion,
+        emotion: record.emotion || null,
         confidence: record.confidence,
-        transcript: record.transcript,
         timestamp: record.createdAt,
       })),
+
+      // ---------------- VIDEO ----------------
+
+      ...videoEmotionRecords.map((record) => ({
+        type: "video_emotion",
+        label: "Video Emotion",
+        emotion: record.emotion || null,
+        confidence: record.confidence,
+        timestamp: record.createdAt,
+      })),
+
+      // ---------------- GUIDED REFLECTION ----------------
+
+      ...guidedReflections.map((record) => ({
+        type: "guided_reflection",
+        label: "Guided Reflection",
+        emotion:
+          record.emotionalState?.specificEmotion ||
+          record.emotionalState?.primaryEmotion ||
+          null,
+        intensity:
+          record.emotionalState?.intensity,
+        timestamp:
+          record.completedAt || record.createdAt,
+      })),
+
+      // ---------------- PHQ-4 ----------------
+
+      ...phq4Assessments.map((record) => ({
+        type: "phq4",
+        label: "PHQ-4 Assessment",
+        timestamp: record.completedAt,
+        phq4Score: record.score,
+      })),
+
+      // ---------------- CHALLENGES ----------------
+
+      ...challengeActivities.map((record) => ({
+        type: "challenge",
+        label: "Challenge Activity",
+        challengeTitle:
+          record.challengeId?.title ||
+          "Challenge",
+        day: record.day,
+        timestamp: record.completedAt,
+      })),
     ]
+      .filter((activity) => activity.timestamp)
       .sort(
         (a, b) =>
-          new Date(b.timestamp) - new Date(a.timestamp)
+          new Date(b.timestamp) -
+          new Date(a.timestamp)
       )
-      .slice(0, 40);
+      .slice(0, 50);
 
-    // -------------------- RESPONSE --------------------
+    // --------------------------------------------------
+    // RESPONSE
+    // --------------------------------------------------
 
     res.status(200).json({
       summary: {
-        totalMoodCheckins: moods.length,
-        totalEmotionalGranularityRecords:
-          emotionalGranularity.length,
-        totalSomaticStressRecords: somaticStress.length,
-        totalShiftCheckins: shiftCheckins.length,
-        totalPostShiftDecompressions:
-          postShiftDecompressions.length,
-        totalJournalEntries: journalEntries.length,
-        totalAudioEmotionRecords:
-          audioEmotionRecords.length,
+        totalMoodCheckins,
+        totalEmotionalGranularityRecords,
+        totalSomaticStressRecords,
+        totalShiftCheckins,
+        totalPostShiftDecompressions,
+        totalJournalEntries,
+        totalTextEmotionRecords,
+        totalAudioEmotionRecords,
+        totalVideoEmotionRecords,
+        totalPHQ4Assessments,
+        totalGuidedReflections,
+        totalChallengeActivities,
+
+        totalActivities:
+          totalMoodCheckins +
+          totalEmotionalGranularityRecords +
+          totalSomaticStressRecords +
+          totalShiftCheckins +
+          totalPostShiftDecompressions +
+          totalJournalEntries +
+          totalTextEmotionRecords +
+          totalAudioEmotionRecords +
+          totalVideoEmotionRecords +
+          totalPHQ4Assessments +
+          totalGuidedReflections +
+          totalChallengeActivities,
       },
+
+      // ------------------------------------------------
+      // MOOD
+      // ------------------------------------------------
 
       mood: {
         mostFrequent: mostFrequentMood,
@@ -1619,31 +2099,98 @@ app.get("/api/emotion-insights", authenticateToken, async (req, res) => {
         distribution: moodCount,
       },
 
+      // ------------------------------------------------
+      // EMOTIONAL GRANULARITY
+      // ------------------------------------------------
+
       emotions: {
         frequentSpecificEmotions,
       },
 
+      // ------------------------------------------------
+      // TEXT EMOTION
+      // ------------------------------------------------
+
+      textEmotion: {
+        frequentEmotions: frequentTextEmotions,
+      },
+
+      // ------------------------------------------------
+      // AUDIO EMOTION
+      // ------------------------------------------------
+
       audioEmotion: {
         frequentEmotions: frequentAudioEmotions,
       },
+
+      // ------------------------------------------------
+      // VIDEO EMOTION
+      // ------------------------------------------------
+
+      videoEmotion: {
+        frequentEmotions: frequentVideoEmotions,
+      },
+
+      // ------------------------------------------------
+      // STRESS
+      // ------------------------------------------------
 
       stress: {
         averageSomaticStress,
         averageShiftStress,
       },
 
+      // ------------------------------------------------
+      // SHIFT
+      // ------------------------------------------------
+
       shift: {
         frequentMoods: frequentShiftMoods,
       },
+
+      // ------------------------------------------------
+      // GUIDED REFLECTION
+      // ------------------------------------------------
+
+      guidedReflection: {
+        frequentEmotions:
+          frequentReflectionEmotions,
+      },
+
+      // ------------------------------------------------
+      // PHQ-4
+      // ------------------------------------------------
 
       phq4: {
         latest: latestPHQ4,
         history: phq4Assessments,
       },
 
+      // ------------------------------------------------
+      // JOURNAL
+      // ------------------------------------------------
+
       journal: {
-        frequentEmotions: frequentJournalEmotions,
+        frequentEmotions:
+          frequentJournalEmotions,
       },
+
+      // ------------------------------------------------
+      // TRENDS
+      // ------------------------------------------------
+
+      trends: {
+        emotionalIntensity:
+          emotionalIntensityTrend,
+
+        stress: stressTrend,
+
+        modalityUsage,
+      },
+
+      // ------------------------------------------------
+      // RECENT ACTIVITY
+      // ------------------------------------------------
 
       recentActivity,
     });

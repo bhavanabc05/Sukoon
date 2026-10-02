@@ -90,14 +90,14 @@
 
   color: #263c39;
 
-  font-size: clamp(42px, 4.5vw, 56px);
-  font-weight: 650;
+  font-size: clamp(32px, 4.5vw, 42px);
+  font-weight: 550;
   line-height: 1.1;
   letter-spacing: -0.04em;
 }
 
 .hero-main h1 span {
-  font-size: 38px;
+  font-size: 32px;
   margin-left: 5px;
 }
 
@@ -517,7 +517,7 @@
 .overview-label {
   color: #81908c;
 
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.13em;
 }
@@ -1386,5 +1386,347 @@
 
   .activity-date {
     margin-top: 5px;
+  }
+}
+
+/* =========================================================
+   DASHBOARD - NEW EMOTION ACTIONS
+========================================================= */
+
+.audio-emotion-icon {
+  background: #e8f3f8;
+}
+
+.video-emotion-icon {
+  background: #f8ecef;
+}
+
+/* =========================================================
+   DASHBOARD - EMOTIONAL TREND
+========================================================= */
+
+.dashboard-trend-card {
+  padding: 24px 26px 20px;
+
+  border: 1px solid #e0ebe7;
+  border-radius: 19px;
+
+  background: #ffffff;
+
+  box-shadow: 0 6px 22px rgba(67, 100, 94, 0.035);
+}
+
+.dashboard-trend-chart {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.dashboard-trend-svg {
+  display: block;
+
+  width: 100%;
+  min-width: 520px;
+  height: auto;
+}
+
+.dashboard-chart-grid {
+  stroke: #e5eeeb;
+  stroke-width: 1;
+}
+
+.dashboard-chart-label {
+  fill: #94a29f;
+  font-size: 11px;
+}
+
+.dashboard-trend-line {
+  stroke: #668d83;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dashboard-trend-point {
+  fill: #ffffff;
+  stroke: #668d83;
+  stroke-width: 2;
+}
+
+.dashboard-trend-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-top: 6px;
+  padding-top: 15px;
+
+  border-top: 1px solid #edf2f0;
+}
+
+.dashboard-trend-footer span {
+  color: #84918e;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.dashboard-trend-footer a {
+  flex-shrink: 0;
+
+  color: #557d74;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  text-decoration: none;
+}
+
+.dashboard-trend-footer a:hover {
+  color: #3f665f;
+}
+
+.dashboard-trend-empty {
+  min-height: 220px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.dashboard-trend-empty span {
+  margin-bottom: 9px;
+  font-size: 30px;
+}
+
+.dashboard-trend-empty p {
+  max-width: 320px;
+
+  margin: 0;
+
+  color: #8b9995;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   DASHBOARD - ALL WELLBEING TOOLS
+========================================================= */
+
+.dashboard-tools-grid {
+  display: grid;
+  font-size: 16px;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 13px;
+}
+
+.dashboard-tool-card {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  min-height: 76px;
+  padding: 13px 15px;
+
+  border: 1px solid #e0ebe7;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: #354946;
+
+  text-decoration: none;
+
+  box-shadow: 0 4px 16px rgba(67, 100, 94, 0.025);
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dashboard-tool-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #cbded7;
+
+  box-shadow: 0 9px 22px rgba(67, 100, 94, 0.07);
+}
+
+.dashboard-tool-card > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 11px;
+
+  background: #edf6f2;
+
+  font-size: 19px;
+}
+
+.dashboard-tool-card div {
+  min-width: 0;
+}
+
+.dashboard-tool-card strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #3c504d;
+
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.dashboard-tool-card small {
+  display: block;
+
+  color: #7b8a87;
+
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   DASHBOARD - SUPPORT & COMMUNITY
+========================================================= */
+
+.dashboard-support-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 13px;
+}
+
+.dashboard-support-card {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  min-height: 72px;
+  padding: 13px 15px;
+
+  border: 1px solid #dce9e4;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: #3d504d;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dashboard-support-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #c8ddd5;
+
+  background: #fbfdfc;
+
+  box-shadow: 0 8px 20px rgba(67, 100, 94, 0.05);
+}
+
+.dashboard-support-card > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 11px;
+
+  background: #eaf4ef;
+
+  font-size: 18px;
+}
+
+.dashboard-support-card div {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-support-card strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #3c504d;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.dashboard-support-card small {
+  display: block;
+
+  color: #7b8a87;
+
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.dashboard-support-card b {
+  flex-shrink: 0;
+
+  color: #66867d;
+
+  font-size: 16px;
+
+  font-weight: 500;
+}
+
+/* =========================================================
+   DASHBOARD - RESPONSIVE ADDITIONS
+========================================================= */
+
+@media (max-width: 1200px) {
+  .dashboard-tools-grid,
+  .dashboard-support-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .dashboard-tools-grid,
+  .dashboard-support-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-trend-card {
+    padding: 19px 17px 17px;
+  }
+
+  .dashboard-trend-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dashboard-trend-footer a {
+    align-self: flex-start;
   }
 }
